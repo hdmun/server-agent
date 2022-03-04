@@ -13,6 +13,8 @@ namespace server_agent
         /// </summary>
         static void Main(string[] args)
         {
+            context.OnStart();
+
             ServiceBase[] ServicesToRun = new ServiceBase[]
             {
                 new MonitoringService(context)

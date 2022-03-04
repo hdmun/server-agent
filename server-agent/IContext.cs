@@ -3,5 +3,7 @@
     public interface IContext
     {
         bool Monitoring { get; set; }
+
+        void OnStart();
     }
 }
