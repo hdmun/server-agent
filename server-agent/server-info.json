@@ -1,0 +1,10 @@
+﻿[
+  {
+    "binaryPath": ".\\test-server-dot-net.exe",
+    "serverName": "TestServer1"
+  },
+  {
+    "binaryPath": ".\\test-server-dot-net.exe",
+    "serverName": "TestServer2"
+  }
+]
