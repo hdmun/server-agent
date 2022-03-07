@@ -1,5 +1,7 @@
 ﻿using server_agent.Data;
 using server_agent.Data.Provider;
+using server_agent.Interactor;
+using System.Collections.Generic;
 
 namespace server_agent
 {
@@ -11,6 +13,7 @@ namespace server_agent
         public AppContext()
         {
             monitoring = true;
+            Processes = null;
             dataConnector = new DataConnector(DataProviderFactory.Create("json"));
         }
 
@@ -28,11 +31,20 @@ namespace server_agent
             }
         }
 
+        public List<ServerProcess> Processes { get; private set; }
+
         public void OnStart()
         {
             if (!dataConnector.Open())
             {
                 return;  // throw exception
+            }
+
+            var detectTime = dataConnector.DetectTime();
+            Processes = new List<ServerProcess>();
+            foreach (var serverInfo in dataConnector.ServerInfo())
+            {
+                Processes.Add(new ServerProcess(serverInfo, detectTime));
             }
         }
     }

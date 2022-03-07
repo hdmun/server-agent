@@ -42,13 +42,17 @@ namespace server_agent
         {
             while (isRunning)
             {
+                await Task.Delay(1000);
+
                 if (!context.Monitoring)
                 {
-                    await Task.Delay(1000);
                     continue;
                 }
 
-                await Task.Delay(1000);
+                foreach (var process in context.Processes)
+                {
+                    process.OnMonitoring();
+                }
             }
         }
     }

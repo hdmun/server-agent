@@ -59,10 +59,12 @@
     <Compile Include="AppContext.cs" />
     <Compile Include="Data\DataConnector.cs" />
     <Compile Include="Data\Model\DetectTimeModel.cs" />
+    <Compile Include="Data\Model\ProcessInfoModel.cs" />
     <Compile Include="Data\Model\ServerInfoModel.cs" />
     <Compile Include="Data\Provider\IDataProvider.cs" />
     <Compile Include="Data\Provider\JsonProvider.cs" />
     <Compile Include="IContext.cs" />
+    <Compile Include="Interactor\ServerProcess.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\MonitoringService.cs">
