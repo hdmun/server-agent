@@ -1,8 +1,8 @@
 ﻿using NetMQ;
 using Newtonsoft.Json;
-using server_agent.Data;
-using server_agent.Data.Provider;
 using server_agent.Interactor;
+using server_agent.Monitoring.Data;
+using server_agent.Monitoring.Data.Provider;
 using server_agent.Network;
 using server_agent.Network.Model;
 using System.Collections.Generic;

@@ -2,7 +2,7 @@
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
-namespace server_agent
+namespace server_agent.Monitoringx
 {
     public class MonitoringService : ServiceBase
     {

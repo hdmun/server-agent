@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using server_agent.Data.Model;
+using server_agent.Monitoring.Model;
 using System;
 using System.Diagnostics;
 using System.IO;

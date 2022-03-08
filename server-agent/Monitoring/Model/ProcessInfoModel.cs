@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace server_agent.Data.Model
+namespace server_agent.Monitoring.Model
 {
     public class ProcessInfoModel
     {

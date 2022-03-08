@@ -1,7 +1,7 @@
-﻿using server_agent.Data.Model;
+﻿using server_agent.Monitoring.Model;
 using System.Collections.Generic;
 
-namespace server_agent.Data.Provider
+namespace server_agent.Monitoring.Data.Provider
 {
     public interface IDataProvider
     {
