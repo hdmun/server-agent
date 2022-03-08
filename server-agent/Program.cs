@@ -1,4 +1,5 @@
-﻿using System;
+﻿using server_agent.Network;
+using System;
 using System.Reflection;
 using System.ServiceProcess;
 
@@ -6,7 +7,7 @@ namespace server_agent
 {
     static class Program
     {
-        static IContext context = new AppContext();
+        static AppContext context = new AppContext();
 
         /// <summary>
         /// 해당 애플리케이션의 주 진입점입니다.
@@ -17,7 +18,8 @@ namespace server_agent
 
             ServiceBase[] ServicesToRun = new ServiceBase[]
             {
-                new MonitoringService(context)
+                new MonitoringService(context),
+                new NetworkService(context)
             };
 
             if (Environment.UserInteractive)
