@@ -4,14 +4,13 @@ using Newtonsoft.Json.Linq;
 using server_agent.Monitoring.Data;
 using server_agent.Monitoring.Data.Provider;
 using server_agent.Monitoring.Interactor;
-using server_agent.Network;
-using server_agent.Network.Model;
-using server_agent.Network.Publish;
+using server_agent.PubSub;
+using server_agent.PubSub.Model;
 using System.Collections.Generic;
 
 namespace server_agent
 {
-    public class AppContext : IContext, INetworkHandler
+    public class AppContext : IContext, IPubSubQueue
     {
         private bool monitoring;
         private DataConnector dataConnector;
@@ -76,33 +75,6 @@ namespace server_agent
                          LastReceiveTime = processInfo.LastReceiveTime
                     })
                 });
-            }
-        }
-
-        public void OnRequest(IOutgoingSocket socket, RequestModel reqModel)
-        {
-            switch (reqModel.Type)
-            {
-                case Protocol.Monitoring:
-                    var model = reqModel.Data.ToObject<MonitoringModel>();
-
-                    Monitoring = model.On;
-
-                    socket.SendFrame(JsonConvert.SerializeObject(new ResponseModel()
-                    {
-                        Success = true,
-                        Message = "Success",
-                        Request = JsonConvert.SerializeObject(reqModel)
-                    }));
-                    break;
-                default:
-                    socket.SendFrame(JsonConvert.SerializeObject(new ResponseModel()
-                    {
-                        Success = false,
-                        Message = "Invalid Protocol Message",
-                        Request = JsonConvert.SerializeObject(reqModel)
-                    }));
-                    break;
             }
         }
 
