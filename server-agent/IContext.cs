@@ -1,4 +1,4 @@
-﻿using server_agent.Interactor;
+﻿using server_agent.Monitoring.Interactor;
 using System.Collections.Generic;
 
 namespace server_agent
@@ -10,5 +10,7 @@ namespace server_agent
         List<ServerProcess> Processes { get; }
 
         void OnStart();
+
+        void OnMonitoring();
     }
 }

@@ -53,6 +53,8 @@ namespace server_agent.Monitoringx
                 {
                     process.OnMonitoring();
                 }
+
+                context.OnMonitoring();
             }
         }
     }

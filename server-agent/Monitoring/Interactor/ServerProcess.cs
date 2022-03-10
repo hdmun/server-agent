@@ -4,12 +4,12 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace server_agent.Interactor
+namespace server_agent.Monitoring.Interactor
 {
     public class ServerProcess
     {
-        private readonly string filepath;
-        private readonly string serverName;
+        public readonly string FilePath;
+        public readonly string ServerName;
         private readonly DetectTimeModel detectTime;
 
         private Process process;
@@ -17,8 +17,8 @@ namespace server_agent.Interactor
 
         public ServerProcess(ServerInfoModel serverInfo, DetectTimeModel detectTime)
         {
-            filepath = serverInfo.BinaryPath;
-            serverName = serverInfo.ServerName;
+            FilePath = serverInfo.BinaryPath;
+            ServerName = serverInfo.ServerName;
             this.detectTime = detectTime;
 
             process = null;
@@ -44,6 +44,22 @@ namespace server_agent.Interactor
 
                 Close();
                 return;
+            }
+        }
+
+        public ProcessInfoModel ProcessInfo
+        {
+            get
+            {
+                lock (processInfo)
+                {
+                    return new ProcessInfoModel()
+                    {
+                        ProcessingTime = processInfo.ProcessingTime,
+                        ThreadId = processInfo.ThreadId,
+                        LastReceiveTime = processInfo.LastReceiveTime
+                    };
+                }
             }
         }
 
@@ -85,9 +101,9 @@ namespace server_agent.Interactor
                 process = new Process();
                 process.StartInfo = new ProcessStartInfo()
                 {
-                    FileName = filepath,
-                    Arguments = $"{serverName}",
-                    WorkingDirectory = Path.GetDirectoryName(filepath),
+                    FileName = FilePath,
+                    Arguments = $"{ServerName}",
+                    WorkingDirectory = Path.GetDirectoryName(FilePath),
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                 };

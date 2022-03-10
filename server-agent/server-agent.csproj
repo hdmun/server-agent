@@ -89,7 +89,7 @@
     <Compile Include="Monitoring\Data\DataConnector.cs" />
     <Compile Include="Monitoring\Model\DetectTimeModel.cs" />
     <Compile Include="Monitoring\Model\ProcessInfoModel.cs" />
-    <Compile Include="Network\IRequestHandler.cs" />
+    <Compile Include="Network\INetworkHandler.cs" />
     <Compile Include="Network\Model\RequestModel.cs" />
     <Compile Include="Network\Model\ResponseModel.cs" />
     <Compile Include="Monitoring\Model\ServerInfoModel.cs" />
@@ -99,6 +99,8 @@
     <Compile Include="Monitoring\Interactor\ServerProcess.cs" />
     <Compile Include="Network\Protocol.cs" />
     <Compile Include="Network\Model\MonitoringModel.cs" />
+    <Compile Include="Network\Publish\PublishModel.cs" />
+    <Compile Include="Network\Publish\ServerInfoModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Monitoring\MonitoringService.cs">

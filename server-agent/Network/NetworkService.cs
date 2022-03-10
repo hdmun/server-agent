@@ -1,7 +1,6 @@
 ﻿using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using server_agent.Network.Model;
 using System;
 using System.Diagnostics;
@@ -12,15 +11,18 @@ namespace server_agent.Network
 {
     public class NetworkService : ServiceBase
     {
-        private readonly IRequestHandler handler;
-        private Task responseTask;
+        private readonly INetworkHandler handler;
         private bool isRunning;
 
-        public NetworkService(IRequestHandler handler)
+        private Task responseTask;
+        private Task publisherTask;
+
+        public NetworkService(INetworkHandler handler)
         {
             this.handler = handler;
-            responseTask = null;
             isRunning = false;
+            responseTask = null;
+            publisherTask = null;
         }
 
         protected override void OnStart(string[] args)
@@ -28,10 +30,8 @@ namespace server_agent.Network
             Debug.WriteLine("NetworkService.OnStart");
 
             isRunning = true;
-            responseTask = Task.Run(() =>
-            {
-                ResponseTask();
-            });
+            responseTask = Task.Run(() => ResponseTask());
+            publisherTask = Task.Run(() => PublisherTask());
         }
 
         protected override void OnStop()
@@ -39,7 +39,7 @@ namespace server_agent.Network
             Debug.WriteLine("NetworkService.OnStop");
 
             isRunning = false;
-            responseTask.Wait();
+            Task.WaitAll(new Task[] { responseTask, publisherTask });
         }
 
         private void ResponseTask()
@@ -72,6 +72,31 @@ namespace server_agent.Network
                         };
                         server.SendFrame(JsonConvert.SerializeObject(response));
                     }
+                }
+            }
+        }
+
+        private void PublisherTask()
+        {
+            using (var pubSocket = new PublisherSocket())
+            {
+                Console.WriteLine("Publisher socket binding...");
+                pubSocket.Options.SendHighWatermark = 1000;
+                pubSocket.Bind("tcp://*:12345");
+
+                while (isRunning)
+                {
+                    var item = handler.Dequeue();
+                    if (item == null)
+                    {
+                        Task.Delay(1000).Wait();
+                        continue;
+                    }
+
+                    pubSocket.SendMoreFrame(item.Topic)
+                        .SendFrame(JsonConvert.SerializeObject(item));
+
+                    Task.Delay(100).Wait();
                 }
             }
         }
