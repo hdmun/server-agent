@@ -12,7 +12,7 @@ namespace server_agent.Web.Controller
             this.context = context;
         }
 
-        [RouteAttribute(WebRequestMethods.Http.Put, @"\/server\/monitoring\/(on|off)")]
+        [Route(WebRequestMethods.Http.Put, @"\/server\/monitoring\/(on|off)")]
         public HttpListenerResponse PUT_Monitoring(HttpListenerRequest request, HttpListenerResponse response)
         {
             string param = request.Url.Segments.Last();
@@ -33,7 +33,7 @@ namespace server_agent.Web.Controller
             return response;
         }
 
-        [RouteAttribute(WebRequestMethods.Http.Put, @"\/server\/process\/(kill)")]
+        [Route(WebRequestMethods.Http.Put, @"\/server\/process\/(kill)")]
         public HttpListenerResponse PUT_Kill(HttpListenerRequest request, HttpListenerResponse response)
         {
             string param = request.Url.Segments.Last();
