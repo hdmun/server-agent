@@ -31,3 +31,9 @@ powershell Remove-Service -Name "server-agent"
 
 https://docs.microsoft.com/ko-kr/dotnet/framework/windows-services/how-to-debug-windows-service-applications
 
+
+### WebServer
+
+```
+netsh http add urlacl url="http://+:80/" user=DOMAIN\user
+```

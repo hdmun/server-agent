@@ -1,6 +1,4 @@
-﻿using NetMQ;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using server_agent.Monitoring.Data;
 using server_agent.Monitoring.Data.Provider;
 using server_agent.Monitoring.Interactor;
@@ -19,7 +17,7 @@ namespace server_agent
 
         public AppContext()
         {
-            monitoring = true;
+            monitoring = false;
             Processes = null;
             dataConnector = new DataConnector(DataProviderFactory.Create("json"));
 

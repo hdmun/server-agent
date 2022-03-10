@@ -1,5 +1,6 @@
 ﻿using server_agent.Monitoringx;
 using server_agent.PubSub;
+using server_agent.Web;
 using System;
 using System.Reflection;
 using System.ServiceProcess;
@@ -20,7 +21,8 @@ namespace server_agent
             ServiceBase[] ServicesToRun = new ServiceBase[]
             {
                 new MonitoringService(context),
-                new PubSubService(context)
+                new PubSubService(context),
+                new WebService(context)
             };
 
             if (Environment.UserInteractive)
