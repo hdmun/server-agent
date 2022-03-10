@@ -17,7 +17,7 @@ namespace server_agent.Web
         private Task taskJob;
         private bool isRunning;
 
-        public WebService(IContext context)
+        public WebService(IWebServiceContext context)
         {
             controllers = new List<IController>()
             {

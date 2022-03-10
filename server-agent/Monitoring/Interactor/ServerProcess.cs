@@ -124,7 +124,7 @@ namespace server_agent.Monitoring.Interactor
             }
         }
 
-        private void Close()
+        public void Close()
         {
             process.Kill();
         }

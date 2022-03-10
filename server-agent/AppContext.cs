@@ -4,11 +4,12 @@ using server_agent.Monitoring.Data.Provider;
 using server_agent.Monitoring.Interactor;
 using server_agent.PubSub;
 using server_agent.PubSub.Model;
+using server_agent.Web;
 using System.Collections.Generic;
 
 namespace server_agent
 {
-    public class AppContext : IContext, IPubSubQueue
+    public class AppContext : IContext, IPubSubQueue, IWebServiceContext
     {
         private bool monitoring;
         private DataConnector dataConnector;
@@ -91,6 +92,14 @@ namespace server_agent
                 if (publishQueue.Count > 0)
                     return publishQueue.Dequeue();
                 return null;
+            }
+        }
+
+        public void OnServerKill()
+        {
+            foreach (var process in Processes)
+            {
+                process.Close();
             }
         }
     }

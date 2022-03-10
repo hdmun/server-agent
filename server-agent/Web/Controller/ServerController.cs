@@ -5,9 +5,9 @@ namespace server_agent.Web.Controller
 {
     public class ServerController : IController
     {
-        private readonly IContext context;
+        private readonly IWebServiceContext context;
 
-        public ServerController(IContext context)
+        public ServerController(IWebServiceContext context)
         {
             this.context = context;
         }
@@ -23,6 +23,24 @@ namespace server_agent.Web.Controller
                     break;
                 case "off":
                     context.Monitoring = false;
+                    break;
+                default:
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return response;
+            }
+
+            response.StatusCode = (int)HttpStatusCode.OK;
+            return response;
+        }
+
+        [RouteAttribute(WebRequestMethods.Http.Put, @"\/server\/process\/(kill)")]
+        public HttpListenerResponse PUT_Kill(HttpListenerRequest request, HttpListenerResponse response)
+        {
+            string param = request.Url.Segments.Last();
+            switch (param)
+            {
+                case "kill":
+                    context.OnServerKill();
                     break;
                 default:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
