@@ -45,12 +45,6 @@ namespace server_agent.Web
             int count = 0;
             foreach (var route in routes.Where(route => route.IsMatch(httpMethod, url)))
             {
-                string[] strParams = context.Request.Url
-                               .Segments
-                               .Skip(2)
-                               .Select(s => s.Replace("/", ""))
-                               .ToArray();
-
                 var response = route.Invoke(request, context.Response);
                 if (response == null)
                 {
