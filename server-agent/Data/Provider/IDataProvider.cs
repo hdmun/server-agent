@@ -20,6 +20,8 @@ namespace server_agent.Data.Provider
         {
             switch (providerName)
             {
+                case "sql":
+                    return new SqlProvider();
                 case "json":
                     return new JsonProvider();
                 default:

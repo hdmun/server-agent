@@ -9,6 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test-server-dot-net", "test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{2B47D9C8-01A8-43ED-9F80-BCA9A678A0B4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sql", "Sql", "{73EAA150-8A18-487F-B93C-73208EAE97E4}"
+	ProjectSection(SolutionItems) = preProject
+		Sql\Schema.sql = Sql\Schema.sql
+		Sql\StoredProcedure.sql = Sql\StoredProcedure.sql
+		Sql\TestData.sql = Sql\TestData.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -14,9 +14,25 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestJsonConfig()
+        public void TestJsonProvider()
         {
             DataConnector dataConnector = new DataConnector(DataProviderFactory.Create("json"));
+            Assert.IsTrue(dataConnector.Open());
+
+            var detectTime = dataConnector.DetectTime();
+            var Processes = new List<ServerProcess>();
+            foreach (var serverInfo in dataConnector.ServerInfo())
+                Processes.Add(new ServerProcess(serverInfo, detectTime));
+
+            Assert.AreEqual(Processes.Count, 2);
+            Assert.AreNotEqual(detectTime, null);
+        }
+
+
+        [TestMethod]
+        public void TestSqlProvider()
+        {
+            DataConnector dataConnector = new DataConnector(DataProviderFactory.Create("sql"));
             Assert.IsTrue(dataConnector.Open());
 
             var detectTime = dataConnector.DetectTime();

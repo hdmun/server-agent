@@ -89,6 +89,9 @@
     <Compile Include="WebServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\server-agent\App.config">
+      <Link>App.config</Link>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

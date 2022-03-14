@@ -7,6 +7,7 @@ using server_agent.PubSub;
 using server_agent.PubSub.Model;
 using server_agent.Web;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace server_agent
 {
@@ -21,7 +22,9 @@ namespace server_agent
         {
             monitoring = false;
             Processes = null;
-            dataConnector = new DataConnector(DataProviderFactory.Create("json"));
+
+            var providerName = ConfigurationManager.AppSettings["DataProvider"];
+            dataConnector = new DataConnector(DataProviderFactory.Create(providerName));
 
             publishQueue = new Queue<PublishModel>();
         }
