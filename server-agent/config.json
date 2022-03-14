@@ -1,0 +1,16 @@
+﻿{
+  "detect": {
+    "deadlock": 3,
+    "stopped": 10
+  },
+  "servers": [
+    {
+      "binaryPath": ".\\test-server-dot-net.exe",
+      "serverName": "TestServer1"
+    },
+    {
+      "binaryPath": ".\\test-server-dot-net.exe",
+      "serverName": "TestServer2"
+    }
+  ]
+}

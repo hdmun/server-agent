@@ -1,9 +1,9 @@
-﻿using server_agent.Monitoring.Data.Provider;
+﻿using server_agent.Data.Provider;
 using server_agent.Monitoring.Model;
 using System;
 using System.Collections.Generic;
 
-namespace server_agent.Monitoring.Data
+namespace server_agent.Data
 {
     public class DataConnector : IDisposable
     {

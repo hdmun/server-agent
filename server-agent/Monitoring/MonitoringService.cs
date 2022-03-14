@@ -2,15 +2,15 @@
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
-namespace server_agent.Monitoringx
+namespace server_agent.Monitoring
 {
     public class MonitoringService : ServiceBase
     {
-        private readonly IContext context;
+        private readonly IMonitoringContext context;
         private Task taskJob;
         private bool isRunning;
 
-        public MonitoringService(IContext context)
+        public MonitoringService(IMonitoringContext context)
         {
             this.context = context;
             taskJob = null;

@@ -24,6 +24,8 @@ powershell New-Service -Name "server-agent" -BinaryPathName "BinaryPath"
 ### 서비스 제거
 
 ```powershell
+powershell Stop-Service -Name "server-agent"
+
 powershell Remove-Service -Name "server-agent"
 ```
 

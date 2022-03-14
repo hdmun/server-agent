@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
-using server_agent.Monitoring.Data;
-using server_agent.Monitoring.Data.Provider;
+using server_agent.Data;
+using server_agent.Data.Provider;
+using server_agent.Monitoring;
 using server_agent.Monitoring.Interactor;
 using server_agent.PubSub;
 using server_agent.PubSub.Model;
@@ -9,7 +10,7 @@ using System.Collections.Generic;
 
 namespace server_agent
 {
-    public class AppContext : IContext, IPubSubQueue, IWebServiceContext
+    public class AppContext : IMonitoringContext, IPubSubQueue, IWebServiceContext
     {
         private bool monitoring;
         private DataConnector dataConnector;

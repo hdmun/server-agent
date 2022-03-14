@@ -1,15 +1,13 @@
 ﻿using server_agent.Monitoring.Interactor;
 using System.Collections.Generic;
 
-namespace server_agent
+namespace server_agent.Monitoring
 {
-    public interface IContext
+    public interface IMonitoringContext
     {
         bool Monitoring { get; set; }
 
         List<ServerProcess> Processes { get; }
-
-        void OnStart();
 
         void OnMonitoring();
     }

@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace server_agent.Monitoring.Data.Provider
+namespace server_agent.Data.Provider
 {
     public class JsonProvider : IDataProvider
     {
-        private readonly string serverInfoFilePath = "server-info.json";
-        private readonly string detectDataFilePath = "detect-data.json";
+        private readonly string configFilePath = "config.json";
 
         public JsonProvider()
         {
@@ -20,23 +19,17 @@ namespace server_agent.Monitoring.Data.Provider
         {
             try
             {
-                if (!File.Exists(serverInfoFilePath))
+                if (!File.Exists(configFilePath))
                 {
                     // error message
                     return false;
                 }
 
-                if (!File.Exists(detectDataFilePath))
-                {
-                    // error message
-                    return false;
-                }
+                string jsonServerInfo = File.ReadAllText(configFilePath);
+                JsonConfigModel jsonConfig = JsonConvert.DeserializeObject<JsonConfigModel>(jsonServerInfo);
 
-                string jsonServerInfo = File.ReadAllText(serverInfoFilePath);
-                ServerInfo = JsonConvert.DeserializeObject<ServerInfoModel[]>(jsonServerInfo).ToList();
-
-                string jsonDetectData = File.ReadAllText(detectDataFilePath);
-                DetectTime = JsonConvert.DeserializeObject<DetectTimeModel>(jsonDetectData);
+                DetectTime = jsonConfig.DetectTime;
+                ServerInfo = jsonConfig.ServerInfo.ToList();
             }
             catch (Exception)
             {

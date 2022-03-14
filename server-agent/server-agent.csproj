@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Monitoring\Model\JsonConfigModel.cs" />
     <Compile Include="Web\Controller\IController.cs" />
     <Compile Include="Web\Controller\ServerController.cs" />
     <Compile Include="Web\IWebServiceContext.cs" />
@@ -95,14 +96,14 @@
     <Compile Include="Web\WebService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Monitoring\Data\DataConnector.cs" />
+    <Compile Include="Data\DataConnector.cs" />
     <Compile Include="Monitoring\Model\DetectTimeModel.cs" />
     <Compile Include="Monitoring\Model\ProcessInfoModel.cs" />
     <Compile Include="PubSub\IPubSubQueue.cs" />
     <Compile Include="Monitoring\Model\ServerInfoModel.cs" />
-    <Compile Include="Monitoring\Data\Provider\IDataProvider.cs" />
-    <Compile Include="Monitoring\Data\Provider\JsonProvider.cs" />
-    <Compile Include="IContext.cs" />
+    <Compile Include="Data\Provider\IDataProvider.cs" />
+    <Compile Include="Data\Provider\JsonProvider.cs" />
+    <Compile Include="Monitoring\IMonitoringContext.cs" />
     <Compile Include="Monitoring\Interactor\ServerProcess.cs" />
     <Compile Include="PubSub\Model\PublishModel.cs" />
     <Compile Include="PubSub\Model\ServerInfoModel.cs" />
@@ -119,10 +120,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="README.md" />
-    <None Include="detect-data.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="server-info.json">
+    <None Include="config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
