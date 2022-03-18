@@ -1,8 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using server_agent.Web;
+using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
+using System.Text;
 
 namespace Tests
 {
@@ -26,22 +29,33 @@ namespace Tests
 
             using (HttpClient client = new HttpClient())
             {
-                var response = client.PutAsync("http://localhost:80/server/monitoring/on", null)
-                    .GetAwaiter()
-                    .GetResult();
-                Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+                client.BaseAddress = new Uri("http://localhost:80/");
+                client.DefaultRequestHeaders
+                      .Accept
+                      .Add(new MediaTypeWithQualityHeaderValue("application/json"));// ACCEPT 헤더
+
+                var responseOn = client.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Put, "/server/monitoring")
+                    {
+                        Content = new StringContent("{\"on\":\"true\"}", Encoding.UTF8, "application/json")
+                    }).GetAwaiter().GetResult();
+                Assert.AreEqual(responseOn.StatusCode, HttpStatusCode.OK);
                 Assert.AreEqual(Monitoring, true);
 
-                response = client.PutAsync("http://localhost:80/server/monitoring/off", null)
-                    .GetAwaiter()
-                    .GetResult();
-                Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+                var responseOff = client.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Put, "/server/monitoring")
+                    {
+                        Content = new StringContent("{\"on\":\"false\"}", Encoding.UTF8, "application/json")
+                    }).GetAwaiter().GetResult();
+                Assert.AreEqual(responseOff.StatusCode, HttpStatusCode.OK);
                 Assert.AreEqual(Monitoring, false);
 
-                response = client.PutAsync("http://localhost:80/server/monitoring", null)
-                    .GetAwaiter()
-                    .GetResult();
-                Assert.AreEqual(response.StatusCode, HttpStatusCode.NotFound);
+                var responseEmtpy = client.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Put, "/server/monitoring")
+                    {
+                        Content = new StringContent("{}", Encoding.UTF8, "application/json")
+                    }).GetAwaiter().GetResult();
+                Assert.AreEqual(responseEmtpy.StatusCode, HttpStatusCode.InternalServerError);
                 Assert.AreEqual(Monitoring, false);
             }
 
@@ -50,6 +64,7 @@ namespace Tests
             onStop.Invoke(service, new object[] { });
         }
 
+        [Ignore]
         [TestMethod]
         public void ProcessKill_Test()
         {
