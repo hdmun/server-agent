@@ -86,7 +86,12 @@ namespace server_agent.Data.Provider
                     SqlDbType = SqlDbType.VarChar,
                     Value = Dns.GetHostName()
                 });
-                detectTime.DeadlockMin = uint.Parse(cmd.ExecuteScalar().ToString());
+
+                var deadlockMin = cmd.ExecuteScalar();
+                if (deadlockMin == null)
+                    return null;
+
+                detectTime.DeadlockMin = uint.Parse(deadlockMin.ToString());
 
                 cmd = new SqlCommand("GetStoppedTime", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -97,7 +102,12 @@ namespace server_agent.Data.Provider
                     SqlDbType = SqlDbType.VarChar,
                     Value = Dns.GetHostName()
                 });
-                detectTime.StoppedMin = uint.Parse(cmd.ExecuteScalar().ToString());
+
+                var stoppedMin = cmd.ExecuteScalar();
+                if (stoppedMin == null)
+                    return null;
+
+                detectTime.StoppedMin = uint.Parse(stoppedMin.ToString());
 
                 return detectTime;
             }
