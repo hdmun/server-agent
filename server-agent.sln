@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.32106.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "server-agent", "server-agent\server-agent.csproj", "{10E67FAD-CCFD-4732-9781-ACB5657B5DFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test-server-dot-net", "test-server-dot-net\test-server-dot-net.csproj", "{AFD4E2CA-D15D-49E5-B384-9E7864AC28FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer", "TestServer\TestServer.csproj", "{AFD4E2CA-D15D-49E5-B384-9E7864AC28FE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{2B47D9C8-01A8-43ED-9F80-BCA9A678A0B4}"
 EndProject
@@ -29,7 +29,6 @@ Global
 		{AFD4E2CA-D15D-49E5-B384-9E7864AC28FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AFD4E2CA-D15D-49E5-B384-9E7864AC28FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFD4E2CA-D15D-49E5-B384-9E7864AC28FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AFD4E2CA-D15D-49E5-B384-9E7864AC28FE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2B47D9C8-01A8-43ED-9F80-BCA9A678A0B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2B47D9C8-01A8-43ED-9F80-BCA9A678A0B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B47D9C8-01A8-43ED-9F80-BCA9A678A0B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
