@@ -44,6 +44,8 @@ namespace server_agent.Monitoring
             {
                 await Task.Delay(1000);
 
+                context.OnMonitoring();
+
                 if (!context.Monitoring)
                 {
                     continue;
@@ -53,8 +55,6 @@ namespace server_agent.Monitoring
                 {
                     process.OnMonitoring();
                 }
-
-                context.OnMonitoring();
             }
         }
     }

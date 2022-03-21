@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using server_agent.PubSub;
 using server_agent.PubSub.Model;
 using System;
+using System.Net;
 using System.Reflection;
 
 namespace Tests
@@ -45,6 +46,7 @@ namespace Tests
                 Topic = "ServerInfo",
                 Data = JObject.FromObject(new ServerInfoModel()
                 {
+                    HostName = Dns.GetHostName(),
                     ProcessName = "Test ProcessName",
                     ServerName = "TestServer",
                     ProcessingTime = 3600,

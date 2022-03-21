@@ -5,6 +5,9 @@ namespace server_agent.PubSub.Model
 {
     public class ServerInfoModel
     {
+        [JsonProperty("hostName", Required = Required.Always)]
+        public string HostName { get; set; }
+
         [JsonProperty("processName", Required = Required.Always)]
         public string ProcessName { get; set; }
 

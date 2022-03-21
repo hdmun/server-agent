@@ -8,6 +8,9 @@ using server_agent.PubSub.Model;
 using server_agent.Web;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 
 namespace server_agent
 {
@@ -71,6 +74,7 @@ namespace server_agent
                     Topic = "ServerInfo",
                     Data = JObject.FromObject(new ServerInfoModel()
                     {
+                        HostName = Dns.GetHostName(),
                          ProcessName = process.FilePath,
                          ServerName = process.ServerName,
                          ProcessingTime = processInfo.ProcessingTime,
