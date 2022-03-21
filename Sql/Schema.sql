@@ -7,7 +7,7 @@ IF OBJECT_ID('[dbo].[Config]') IS NOT NULL
 GO
 
 CREATE TABLE [dbo].[Config] (
-	[HostName] varchar(255) NOT NULL,
+	[HostName] varchar(30) NOT NULL,
 	[Key] varchar(255) NOT NULL,
 	[Value] varchar(255) NOT NULL,
 
@@ -21,7 +21,7 @@ IF OBJECT_ID('[dbo].[ServerBinary]') IS NOT NULL
 GO
 
 CREATE TABLE [dbo].[ServerBinary] (
-	[HostName] varchar(255) NOT NULL,
+	[HostName] varchar(30) NOT NULL,
 	[ProcessPath] varchar(255) NOT NULL,
 	[ServerName] varchar(255) NOT NULL,
 

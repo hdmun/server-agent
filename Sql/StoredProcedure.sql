@@ -7,7 +7,7 @@ IF OBJECT_ID('[dbo].[GetDeadlockTime]') IS NOT NULL
 GO
 
 CREATE PROC [dbo].[GetDeadlockTime]
-	@hostName varchar(255)
+	@hostName varchar(30)
 AS
 SET NOCOUNT ON
 SET LOCK_TIMEOUT 2000
@@ -21,7 +21,7 @@ IF OBJECT_ID('[dbo].[GetStoppedTime]') IS NOT NULL
 GO
 
 CREATE PROC [dbo].[GetStoppedTime]
-	@hostName varchar(255)
+	@hostName varchar(30)
 AS
 SET NOCOUNT ON
 SET LOCK_TIMEOUT 2000
@@ -35,7 +35,7 @@ IF OBJECT_ID('[dbo].[GetServerBinarise]') IS NOT NULL
 GO
 
 CREATE PROC [dbo].[GetServerBinarise]
-	@hostName varchar(255)
+	@hostName varchar(30)
 AS
 SET NOCOUNT ON
 SET LOCK_TIMEOUT 2000
