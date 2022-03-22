@@ -1,8 +1,7 @@
-﻿using NetMQ;
+﻿using log4net;
+using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
-using System;
-using System.Diagnostics;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
@@ -10,6 +9,7 @@ namespace server_agent.PubSub
 {
     public class PubSubService : ServiceBase
     {
+        private readonly ILog logger;
         private readonly IPubSubQueue handler;
         private bool isRunning;
 
@@ -17,6 +17,8 @@ namespace server_agent.PubSub
 
         public PubSubService(IPubSubQueue handler)
         {
+            logger = LogManager.GetLogger(typeof(PubSubService));
+
             this.handler = handler;
             isRunning = false;
             publisherTask = null;
@@ -24,7 +26,7 @@ namespace server_agent.PubSub
 
         protected override void OnStart(string[] args)
         {
-            Debug.WriteLine("PubSubService.OnStart");
+            logger.Info("starting service");
 
             isRunning = true;
             publisherTask = Task.Run(() => PublisherTask());
@@ -32,7 +34,7 @@ namespace server_agent.PubSub
 
         protected override void OnStop()
         {
-            Debug.WriteLine("PubSubService.OnStop");
+            logger.Info("stopping service");
 
             isRunning = false;
             Task.WaitAll(new Task[] { publisherTask });
@@ -42,7 +44,8 @@ namespace server_agent.PubSub
         {
             using (var pubSocket = new PublisherSocket())
             {
-                Console.WriteLine("Publisher socket binding...");
+                logger?.Info("Publisher socket binding...");
+
                 pubSocket.Options.SendHighWatermark = 1000;
                 pubSocket.Bind("tcp://*:12345");
 

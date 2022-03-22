@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using log4net;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
@@ -6,12 +6,15 @@ namespace server_agent.Monitoring
 {
     public class MonitoringService : ServiceBase
     {
+        private readonly ILog logger;
         private readonly IMonitoringContext context;
         private Task taskJob;
         private bool isRunning;
 
         public MonitoringService(IMonitoringContext context)
         {
+            logger = LogManager.GetLogger(typeof(MonitoringService));
+
             this.context = context;
             taskJob = null;
             isRunning = false;
@@ -19,7 +22,7 @@ namespace server_agent.Monitoring
 
         protected override void OnStart(string[] args)
         {
-            Debug.WriteLine("MonitoringService.OnStart");
+            logger.Info("starting service");
 
             // load target process info
 
@@ -32,7 +35,7 @@ namespace server_agent.Monitoring
 
         protected override void OnStop()
         {
-            Debug.WriteLine("MonitoringService.OnStop");
+            logger.Info("stopping service");
 
             isRunning = false;
             taskJob.Wait();

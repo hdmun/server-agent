@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using log4net;
+using Newtonsoft.Json;
 using server_agent.Monitoring.Model;
 using System;
 using System.Diagnostics;
@@ -8,6 +9,8 @@ namespace server_agent.Monitoring.Interactor
 {
     public class ServerProcess
     {
+        public readonly ILog logger;
+
         public readonly string FilePath;
         public readonly string ServerName;
         private readonly DetectTimeModel detectTime;
@@ -17,6 +20,8 @@ namespace server_agent.Monitoring.Interactor
 
         public ServerProcess(ServerInfoModel serverInfo, DetectTimeModel detectTime)
         {
+            logger = LogManager.GetLogger(typeof(ServerProcess));
+
             FilePath = serverInfo.BinaryPath;
             ServerName = serverInfo.ServerName;
             this.detectTime = detectTime;
@@ -115,11 +120,13 @@ namespace server_agent.Monitoring.Interactor
 
                 bool started = process.Start();
                 process.BeginOutputReadLine();
+
+                logger.Info($"start process. {ServerName}, started: {started}");
                 return started;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                logger.Error("start exception", ex);
                 return false;
             }
         }
@@ -127,6 +134,7 @@ namespace server_agent.Monitoring.Interactor
         public void Close()
         {
             process.Kill();
+            logger.Info($"on kill process. {ServerName}");
         }
 
         private void OutputDataReceived(object sender, DataReceivedEventArgs e)
@@ -146,11 +154,11 @@ namespace server_agent.Monitoring.Interactor
             }
             catch (JsonSerializationException)
             {
-                Console.WriteLine(e?.Data);
+                logger.Error($"json serialize exception. {e.Data}");
             }
             catch (JsonReaderException)
             {
-                Console.WriteLine(e?.Data);  // 읽기 실패하면 무시
+                logger.Error($"json read exception. {e.Data}");
             }
         }
     }

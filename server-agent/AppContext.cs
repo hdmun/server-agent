@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using log4net;
+using Newtonsoft.Json.Linq;
 using server_agent.Data;
 using server_agent.Data.Provider;
 using server_agent.Monitoring;
@@ -8,14 +9,14 @@ using server_agent.PubSub.Model;
 using server_agent.Web;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 
 namespace server_agent
 {
     public class AppContext : IMonitoringContext, IPubSubQueue, IWebServiceContext
     {
+        private readonly ILog logger;
+
         private bool monitoring;
         private DataConnector dataConnector;
 
@@ -23,6 +24,8 @@ namespace server_agent
 
         public AppContext()
         {
+            logger = LogManager.GetLogger(typeof(AppContext));
+
             monitoring = false;
             Processes = null;
 
@@ -42,7 +45,10 @@ namespace server_agent
             set
             {
                 lock (this)
+                {
+                    logger.Info($"change monitoring flag, before: {monitoring}, after: {value}");
                     monitoring = value;
+                }
             }
         }
 
@@ -50,9 +56,12 @@ namespace server_agent
 
         public void OnStart()
         {
+            logger.Info("start context");
+
             if (!dataConnector.Open())
             {
-                return;  // throw exception
+                logger.Error("failed to open `DataConnector`");
+                return;  // throw exception?
             }
 
             var detectTime = dataConnector.DetectTime();
@@ -61,6 +70,8 @@ namespace server_agent
             {
                 Processes.Add(new ServerProcess(serverInfo, detectTime));
             }
+
+            logger.Info($"load process list, process count: {Processes.Count}");
         }
 
         public void OnMonitoring()

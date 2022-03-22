@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{AFD4E2CA-D15D-49E5-B384-9E7864AC28FE}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>test_server_dot_net</RootNamespace>
-    <AssemblyName>test-server-dot-net</AssemblyName>
+    <RootNamespace>TestServer</RootNamespace>
+    <AssemblyName>TestServer</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

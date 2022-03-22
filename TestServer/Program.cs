@@ -2,13 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace test_server_dot_net
+namespace TestServer
 {
     class Program
     {
         static bool isRunning = false;
 
-        static int processingTime = 3600;
+        static int processingTime = 60;
 
         static void Main(string[] args)
         {

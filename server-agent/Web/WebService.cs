@@ -1,7 +1,7 @@
-﻿using server_agent.Web.Controller;
+﻿using log4net;
+using server_agent.Web.Controller;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.ServiceProcess;
 using System.Threading.Tasks;
@@ -10,6 +10,8 @@ namespace server_agent.Web
 {
     public class WebService : ServiceBase
     {
+        private readonly ILog logger;
+
         private readonly IList<IController> controllers;
         private readonly IRouter router;
         private readonly HttpListener httpListener;
@@ -19,6 +21,8 @@ namespace server_agent.Web
 
         public WebService(IWebServiceContext context)
         {
+            logger = LogManager.GetLogger(typeof(WebService));
+
             controllers = new List<IController>()
             {
                 new ServerController(context)
@@ -35,7 +39,7 @@ namespace server_agent.Web
 
         protected override void OnStart(string[] args)
         {
-            Debug.WriteLine("WebService.OnStart");
+            logger.Info("starting service");
 
             foreach (var controller in controllers)
             {
@@ -48,7 +52,7 @@ namespace server_agent.Web
 
         protected override void OnStop()
         {
-            Debug.WriteLine("WebService.OnStop");
+            logger.Info("stopping service");
 
             isRunning = false;
             httpListener.Stop();
