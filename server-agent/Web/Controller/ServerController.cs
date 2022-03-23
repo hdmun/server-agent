@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using log4net;
+using Newtonsoft.Json;
 using server_agent.Web.Model;
 using System;
 using System.IO;
@@ -10,10 +11,12 @@ namespace server_agent.Web.Controller
 {
     public class ServerController : IController
     {
+        private readonly ILog logger;
         private readonly IWebServiceContext context;
 
         public ServerController(IWebServiceContext context)
         {
+            logger = LogManager.GetLogger(typeof(WebService));
             this.context = context;
         }
 
@@ -32,12 +35,14 @@ namespace server_agent.Web.Controller
 
                 if (model == null || inputData == null)
                 {
+                    logger.Error($"invalid request `/server/monitoring`");
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return response;
                 }
 
                 if (model.HostName != Dns.GetHostName())
                 {
+                    logger.Error($"invalid HostName. {model.HostName}, {Dns.GetHostName()}");
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return response;
                 }
