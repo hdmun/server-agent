@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 
 namespace server_agent.Web.Controller
 {
@@ -21,18 +22,33 @@ namespace server_agent.Web.Controller
         {
             try
             {
+                string inputData = null;
                 ServerMonitoringModel model = null;
                 using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
-                    model = JsonConvert.DeserializeObject<ServerMonitoringModel>(reader.ReadToEnd());
+                {
+                    inputData = reader.ReadToEnd();
+                    model = JsonConvert.DeserializeObject<ServerMonitoringModel>(inputData);
+                }
 
-                if (model == null)
+                if (model == null || inputData == null)
+                {
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return response;
+                }
+
+                if (model.HostName != Dns.GetHostName())
                 {
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return response;
                 }
 
                 context.Monitoring = model.On;
-                response.StatusCode = (int)HttpStatusCode.OK; 
+                response.StatusCode = (int)HttpStatusCode.Created;
+
+                response.ContentType = "Application/json";
+                byte[] buffer = Encoding.UTF8.GetBytes(inputData);
+                response.OutputStream.Write(buffer, 0, buffer.Length);
+                response.OutputStream.Close();
             }
             catch (Exception)
             {

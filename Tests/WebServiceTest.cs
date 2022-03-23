@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using server_agent.Web;
+using server_agent.Web.Model;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -19,7 +21,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void MonitoringOnOff_Test()
+        public void MonitoringOn_Test()
         {
             var service = new WebService(this);
 
@@ -34,21 +36,77 @@ namespace Tests
                       .Accept
                       .Add(new MediaTypeWithQualityHeaderValue("application/json"));// ACCEPT 헤더
 
+                ServerMonitoringModel reqOn = new ServerMonitoringModel()
+                {
+                    HostName = Dns.GetHostName(),
+                    On = true
+                };
                 var responseOn = client.SendAsync(
                     new HttpRequestMessage(HttpMethod.Put, "/server/monitoring")
                     {
-                        Content = new StringContent("{\"on\":\"true\"}", Encoding.UTF8, "application/json")
+                        Content = new StringContent(JsonConvert.SerializeObject(reqOn), Encoding.UTF8, "application/json")
                     }).GetAwaiter().GetResult();
-                Assert.AreEqual(responseOn.StatusCode, HttpStatusCode.OK);
-                Assert.AreEqual(Monitoring, true);
+                Assert.AreEqual(responseOn.StatusCode, HttpStatusCode.Created);
+                Assert.IsTrue(Monitoring);
 
+
+                var resStringOn = responseOn.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var resModelOn = JsonConvert.DeserializeObject<ServerMonitoringModel>(resStringOn);
+                Assert.AreEqual(resModelOn.HostName, Dns.GetHostName());
+                Assert.IsTrue(resModelOn.On);
+
+                ServerMonitoringModel reqOff = new ServerMonitoringModel()
+                {
+                    HostName = Dns.GetHostName(),
+                    On = false
+                };
                 var responseOff = client.SendAsync(
                     new HttpRequestMessage(HttpMethod.Put, "/server/monitoring")
                     {
-                        Content = new StringContent("{\"on\":\"false\"}", Encoding.UTF8, "application/json")
+                        Content = new StringContent(JsonConvert.SerializeObject(reqOff), Encoding.UTF8, "application/json")
                     }).GetAwaiter().GetResult();
-                Assert.AreEqual(responseOff.StatusCode, HttpStatusCode.OK);
-                Assert.AreEqual(Monitoring, false);
+                Assert.AreEqual(responseOff.StatusCode, HttpStatusCode.Created);
+                Assert.IsFalse(Monitoring);
+
+                var resStringOff = responseOff.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var resModelOff = JsonConvert.DeserializeObject<ServerMonitoringModel>(resStringOff);
+                Assert.AreEqual(resModelOff.HostName, Dns.GetHostName());
+                Assert.IsFalse(resModelOff.On);
+            }
+
+            MethodInfo onStop = typeof(WebService)
+                .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
+            onStop.Invoke(service, new object[] { });
+        }
+
+        [TestMethod]
+        public void MonitoringInvalid_Test()
+        {
+            var service = new WebService(this);
+
+            MethodInfo onStart = typeof(WebService)
+                .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
+            onStart.Invoke(service, new object[] { new string[] { } });
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:80/");
+                client.DefaultRequestHeaders
+                      .Accept
+                      .Add(new MediaTypeWithQualityHeaderValue("application/json"));// ACCEPT 헤더
+
+                ServerMonitoringModel reqInvalidHost = new ServerMonitoringModel()
+                {
+                    HostName = "Invalid HostName",
+                    On = false
+                };
+                var responseError = client.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Put, "/server/monitoring")
+                    {
+                        Content = new StringContent(JsonConvert.SerializeObject(reqInvalidHost), Encoding.UTF8, "application/json")
+                    }).GetAwaiter().GetResult();
+                Assert.AreEqual(responseError.StatusCode, HttpStatusCode.BadRequest);
+
 
                 var responseEmtpy = client.SendAsync(
                     new HttpRequestMessage(HttpMethod.Put, "/server/monitoring")
