@@ -59,7 +59,7 @@ namespace server_agent.PubSub
                     }
 
                     pubSocket.SendMoreFrame(item.Topic)
-                        .SendFrame(JsonConvert.SerializeObject(item));
+                        .SendFrame(JsonConvert.SerializeObject(item.Data));
 
                     Task.Delay(100).Wait();
                 }

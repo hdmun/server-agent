@@ -76,6 +76,16 @@ namespace server_agent
 
         public void OnMonitoring()
         {
+            Enqueue(new PublishModel()
+            {
+                Topic = "HostInfo",
+                Data = JObject.FromObject(new HostInfoModel()
+                {
+                    HostName = Dns.GetHostName(),
+                    Monitoring = Monitoring
+                })
+            });
+
             foreach (var process in Processes)
             {
                 var processInfo = process.ProcessInfo;
