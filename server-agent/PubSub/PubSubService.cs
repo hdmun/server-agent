@@ -2,6 +2,7 @@
 using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
+using System;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
@@ -51,15 +52,22 @@ namespace ServerAgent.PubSub
 
                 while (isRunning)
                 {
-                    var item = handler.Dequeue();
-                    if (item == null)
+                    try
                     {
-                        Task.Delay(1000).Wait();
-                        continue;
-                    }
+                        var item = handler.Dequeue();
+                        if (item == null)
+                        {
+                            Task.Delay(1000).Wait();
+                            continue;
+                        }
 
-                    pubSocket.SendMoreFrame(item.Topic)
-                        .SendFrame(JsonConvert.SerializeObject(item.Data));
+                        pubSocket.SendMoreFrame(item.Topic)
+                            .SendFrame(JsonConvert.SerializeObject(item.Data));
+                    }
+                    catch (Exception ex)
+                    {
+                        logger?.Error("Exception PublisherTask", ex);
+                    }
 
                     Task.Delay(100).Wait();
                 }
