@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace server_agent.PubSub.Model
+namespace ServerAgent.PubSub.Model
 {
     public class PublishModel
     {

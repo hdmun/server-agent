@@ -1,4 +1,4 @@
-﻿using server_agent.Monitoring.Model;
+﻿using ServerAgent.Monitoring.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Net;
 
-namespace server_agent.Data.Provider
+namespace ServerAgent.Data.Provider
 {
     public class SqlProvider : IDataProvider
     {

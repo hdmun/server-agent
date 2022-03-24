@@ -1,9 +1,9 @@
-﻿using server_agent.Web.Controller;
+﻿using ServerAgent.Web.Controller;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace server_agent.Web
+namespace ServerAgent.Web
 {
     public interface IRouter
     {

@@ -1,4 +1,4 @@
-﻿namespace server_agent.Web
+﻿namespace ServerAgent.Web
 {
     public interface IWebServiceContext
     {

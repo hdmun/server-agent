@@ -1,6 +1,6 @@
-﻿using server_agent.PubSub.Model;
+﻿using ServerAgent.PubSub.Model;
 
-namespace server_agent.PubSub
+namespace ServerAgent.PubSub
 {
     public interface IPubSubQueue
     {

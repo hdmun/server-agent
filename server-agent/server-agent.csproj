@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{10E67FAD-CCFD-4732-9781-ACB5657B5DFE}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>server_agent</RootNamespace>
+    <RootNamespace>ServerAgent</RootNamespace>
     <AssemblyName>server-agent</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

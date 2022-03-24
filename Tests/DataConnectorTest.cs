@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using server_agent.Data;
-using server_agent.Data.Provider;
-using server_agent.Monitoring.Interactor;
+using ServerAgent.Data;
+using ServerAgent.Data.Provider;
+using ServerAgent.Monitoring.Interactor;
 using System.Collections.Generic;
 
 namespace Tests

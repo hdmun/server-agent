@@ -1,17 +1,17 @@
 ﻿using log4net;
 using Newtonsoft.Json.Linq;
-using server_agent.Data;
-using server_agent.Data.Provider;
-using server_agent.Monitoring;
-using server_agent.Monitoring.Interactor;
-using server_agent.PubSub;
-using server_agent.PubSub.Model;
-using server_agent.Web;
+using ServerAgent.Data;
+using ServerAgent.Data.Provider;
+using ServerAgent.Monitoring;
+using ServerAgent.Monitoring.Interactor;
+using ServerAgent.PubSub;
+using ServerAgent.PubSub.Model;
+using ServerAgent.Web;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
 
-namespace server_agent
+namespace ServerAgent
 {
     public class AppContext : IMonitoringContext, IPubSubQueue, IWebServiceContext
     {

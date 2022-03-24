@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace server_agent.PubSub.Model
+namespace ServerAgent.PubSub.Model
 {
     public class ServerInfoModel
     {

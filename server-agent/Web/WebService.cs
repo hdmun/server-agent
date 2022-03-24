@@ -1,12 +1,12 @@
 ﻿using log4net;
-using server_agent.Web.Controller;
+using ServerAgent.Web.Controller;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
-namespace server_agent.Web
+namespace ServerAgent.Web
 {
     public class WebService : ServiceBase
     {

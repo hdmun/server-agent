@@ -1,7 +1,7 @@
-﻿using server_agent.Monitoring.Interactor;
+﻿using ServerAgent.Monitoring.Interactor;
 using System.Collections.Generic;
 
-namespace server_agent.Monitoring
+namespace ServerAgent.Monitoring
 {
     public interface IMonitoringContext
     {

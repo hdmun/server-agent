@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using server_agent.Web;
-using server_agent.Web.Model;
+using ServerAgent.Web;
+using ServerAgent.Web.Model;
 using System;
 using System.Net;
 using System.Net.Http;

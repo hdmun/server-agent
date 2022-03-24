@@ -1,11 +1,11 @@
-﻿using server_agent.Monitoring;
-using server_agent.PubSub;
-using server_agent.Web;
+﻿using ServerAgent.Monitoring;
+using ServerAgent.PubSub;
+using ServerAgent.Web;
 using System;
 using System.Reflection;
 using System.ServiceProcess;
 
-namespace server_agent
+namespace ServerAgent
 {
     static class Program
     {

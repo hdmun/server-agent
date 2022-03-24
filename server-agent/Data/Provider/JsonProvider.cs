@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
-using server_agent.Monitoring.Model;
+using ServerAgent.Monitoring.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace server_agent.Data.Provider
+namespace ServerAgent.Data.Provider
 {
     public class JsonProvider : IDataProvider
     {

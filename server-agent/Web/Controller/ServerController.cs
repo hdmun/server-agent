@@ -1,13 +1,13 @@
 ﻿using log4net;
 using Newtonsoft.Json;
-using server_agent.Web.Model;
+using ServerAgent.Web.Model;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace server_agent.Web.Controller
+namespace ServerAgent.Web.Controller
 {
     public class ServerController : IController
     {

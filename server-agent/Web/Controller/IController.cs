@@ -1,4 +1,4 @@
-﻿namespace server_agent.Web.Controller
+﻿namespace ServerAgent.Web.Controller
 {
     public interface IController
     {

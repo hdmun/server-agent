@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
-namespace server_agent.PubSub
+namespace ServerAgent.PubSub
 {
     public class PubSubService : ServiceBase
     {

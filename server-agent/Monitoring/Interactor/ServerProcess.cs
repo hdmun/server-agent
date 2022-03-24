@@ -1,11 +1,11 @@
 ﻿using log4net;
 using Newtonsoft.Json;
-using server_agent.Monitoring.Model;
+using ServerAgent.Monitoring.Model;
 using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace server_agent.Monitoring.Interactor
+namespace ServerAgent.Monitoring.Interactor
 {
     public class ServerProcess
     {

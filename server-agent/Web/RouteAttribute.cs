@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace server_agent.Web
+namespace ServerAgent.Web
 {
     public class RouteAttribute : Attribute
     {

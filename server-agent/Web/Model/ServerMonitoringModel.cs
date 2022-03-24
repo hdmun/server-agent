@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace server_agent.Web.Model
+namespace ServerAgent.Web.Model
 {
     public class ServerMonitoringModel
     {
