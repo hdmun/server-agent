@@ -7,6 +7,7 @@ using ServerAgent.Monitoring.Interactor;
 using ServerAgent.PubSub;
 using ServerAgent.PubSub.Model;
 using ServerAgent.Web;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
@@ -61,7 +62,7 @@ namespace ServerAgent
             if (!dataConnector.Open())
             {
                 logger.Error("failed to open `DataConnector`");
-                return;  // throw exception?
+                throw new Exception("failed to Open, `dataConnector` in AppContext.OnStart");
             }
 
             var detectTime = dataConnector.DetectTime();
