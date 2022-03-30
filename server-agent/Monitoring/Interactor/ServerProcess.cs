@@ -68,7 +68,7 @@ namespace ServerAgent.Monitoring.Interactor
             }
         }
 
-        private bool IsDead
+        public bool IsDead
         {
             get
             {

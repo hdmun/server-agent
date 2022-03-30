@@ -99,6 +99,7 @@ namespace ServerAgent
                         HostName = Dns.GetHostName(),
                          ProcessName = process.FilePath,
                          ServerName = process.ServerName,
+                         IsAlive = !process.IsDead,
                          ProcessingTime = processInfo.ProcessingTime,
                          ThreadId = processInfo.ThreadId,
                          LastReceiveTime = processInfo.LastReceiveTime

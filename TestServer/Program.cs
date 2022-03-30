@@ -8,7 +8,7 @@ namespace TestServer
     {
         static bool isRunning = false;
 
-        static int processingTime = 60;
+        static int processingTime = 600;
 
         static void Main(string[] args)
         {
