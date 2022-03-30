@@ -16,15 +16,15 @@ CREATE TABLE [dbo].[Config] (
 GO
 
 
-IF OBJECT_ID('[dbo].[ServerBinary]') IS NOT NULL
-	DROP TABLE [dbo].[ServerBinary]
+IF OBJECT_ID('[dbo].[ServerProcess]') IS NOT NULL
+	DROP TABLE [dbo].[ServerProcess]
 GO
 
-CREATE TABLE [dbo].[ServerBinary] (
+CREATE TABLE [dbo].[ServerProcess] (
 	[HostName] varchar(30) NOT NULL,
-	[ProcessPath] varchar(255) NOT NULL,
 	[ServerName] varchar(255) NOT NULL,
+	[ProcessPath] varchar(255) NOT NULL,
 
-	PRIMARY KEY([HostName], [ProcessPath], [ServerName])
+	PRIMARY KEY([HostName], [ServerName])
 )
 GO

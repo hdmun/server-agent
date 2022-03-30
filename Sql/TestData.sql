@@ -12,12 +12,12 @@ INSERT INTO [dbo].[Config] ([HostName], [Key], [Value])
 GO
 
 
-TRUNCATE TABLE [dbo].[ServerBinary]
+TRUNCATE TABLE [dbo].[ServerProcess]
 GO
 
-INSERT INTO [dbo].[ServerBinary] ([HostName], [ProcessPath], [ServerName])
-    VALUES ('LAPTOP-PR4G61PI', '.\TestServer.exe', 'TestServer1'),
-           ('LAPTOP-PR4G61PI', '.\TestServer.exe', 'TestServer2'),
-           ('DESKTOP-UNOS40A', '.\TestServer.exe', 'TestServer1'),
-           ('DESKTOP-UNOS40A', '.\TestServer.exe', 'TestServer2')
+INSERT INTO [dbo].[ServerProcess] ([HostName], [ServerName], [ProcessPath])
+    VALUES ('LAPTOP-PR4G61PI', 'TestServer1', '.\TestServer.exe'),
+           ('LAPTOP-PR4G61PI', 'TestServer2', '.\TestServer.exe'),
+           ('DESKTOP-UNOS40A', 'TestServer1', '.\TestServer.exe'),
+           ('DESKTOP-UNOS40A', 'TestServer2', '.\TestServer.exe')
 GO

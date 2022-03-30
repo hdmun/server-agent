@@ -30,17 +30,17 @@ SELECT [Value] FROM [dbo].[Config] WHERE [HostName] = @hostName AND [Key] = 'Sto
 GO
 
 
-IF OBJECT_ID('[dbo].[GetServerBinarise]') IS NOT NULL
-	DROP PROC [dbo].[GetServerBinarise]
+IF OBJECT_ID('[dbo].[GetServerProcess]') IS NOT NULL
+	DROP PROC [dbo].[GetServerProcess]
 GO
 
-CREATE PROC [dbo].[GetServerBinarise]
+CREATE PROC [dbo].[GetServerProcess]
 	@hostName varchar(30)
 AS
 SET NOCOUNT ON
 SET LOCK_TIMEOUT 2000
 
-SELECT [ProcessPath], [ServerName]
+SELECT [ServerName], [ProcessPath]
 FROM [dbo].[ServerBinary]
 WHERE [HostName] = @hostName
 GO

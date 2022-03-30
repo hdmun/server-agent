@@ -44,7 +44,7 @@ namespace ServerAgent.Data.Provider
         {
             get
             {
-                SqlCommand cmd = new SqlCommand("GetServerBinarise", conn);
+                SqlCommand cmd = new SqlCommand("GetServerProcess", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter
                 {
