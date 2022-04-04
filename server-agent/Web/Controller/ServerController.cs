@@ -63,20 +63,72 @@ namespace ServerAgent.Web.Controller
             return response;
         }
 
-        [Route(WebRequestMethods.Http.Put, @"\/server\/process\/(kill)")]
+        [Route(WebRequestMethods.Http.Put, "/server/process/kill")]
         public HttpListenerResponse PUT_Kill(HttpListenerRequest request, HttpListenerResponse response)
         {
-            string param = request.Url.Segments.Last();
-            switch (param)
+            string inputData = null;
+            ServerKillRequestModel model = null;
+            using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
             {
+                inputData = reader.ReadToEnd();
+                model = JsonConvert.DeserializeObject<ServerKillRequestModel>(inputData);
+            }
+
+            if (model == null || inputData == null)
+            {
+                logger.Error($"invalid request `{request.Url}`");
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            logger.Info($"http request `{request.Url}`, {model.ServerName}, {model.KillCommand}");
+
+            ServerKillResponseModel[] closedServers;
+            switch (model.KillCommand)
+            {
+                case "killAll":
+                    {
+                        closedServers = context.OnServerKill();
+                        if (closedServers == null)
+                            closedServers = new ServerKillResponseModel[] { };
+                        break;
+                    }
+                case "closeAll":
+                    {
+                        closedServers = context.OnServerClose();
+                        if (closedServers == null)
+                            closedServers = new ServerKillResponseModel[] { };
+                        break;
+                    }
                 case "kill":
-                    context.OnServerKill();
-                    break;
+                    {
+                        var closedServer = context.OnServerKill(model.ServerName);
+                        if (closedServer == null)
+                            closedServers = new ServerKillResponseModel[] { };
+                        else
+                            closedServers = new ServerKillResponseModel[] { closedServer };
+                        break;
+                    }
+                case "close":
+                    {
+                        var closedServer = context.OnServerClose(model.ServerName);
+                        if (closedServer == null)
+                            closedServers = new ServerKillResponseModel[] { };
+                        else
+                            closedServers = new ServerKillResponseModel[] { closedServer };
+                        break;
+                    }
                 default:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return response;
             }
 
+            logger.Info($"http response `{request.Url}`, closed server count: {closedServers.Length}");
+
+            response.ContentType = "Application/json";
+            byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(closedServers));
+            response.OutputStream.Write(buffer, 0, buffer.Length);
+            response.OutputStream.Close();
             response.StatusCode = (int)HttpStatusCode.OK;
             return response;
         }

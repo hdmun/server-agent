@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -16,8 +17,24 @@ namespace Tests
     {
         public bool Monitoring { get; set; } = false;
 
-        public void OnServerKill()
+        ServerKillResponseModel[] IWebServiceContext.OnServerKill()
         {
+            return new ServerKillResponseModel[] { };
+        }
+
+        public ServerKillResponseModel[] OnServerClose()
+        {
+            return new ServerKillResponseModel[] { };
+        }
+
+        public ServerKillResponseModel OnServerKill(string serverName)
+        {
+            return new ServerKillResponseModel();
+        }
+
+        public ServerKillResponseModel OnServerClose(string serverName)
+        {
+            return new ServerKillResponseModel();
         }
 
         [TestMethod]
@@ -124,7 +141,7 @@ namespace Tests
 
         [Ignore]
         [TestMethod]
-        public void ProcessKill_Test()
+        public async Task ProcessKill_Test()
         {
             var service = new WebService(this);
 
@@ -134,15 +151,27 @@ namespace Tests
 
             using (HttpClient client = new HttpClient())
             {
-                var response = client.PutAsync("http://localhost:80/server/process/kill", null)
-                    .GetAwaiter()
-                    .GetResult();
-                Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+                client.BaseAddress = new Uri("http://localhost:80/");
+                client.DefaultRequestHeaders
+                      .Accept
+                      .Add(new MediaTypeWithQualityHeaderValue("application/json"));// ACCEPT 헤더
 
-                response = client.PutAsync("http://localhost:80/server/monitoring/unknown", null)
-                    .GetAwaiter()
-                    .GetResult();
-                Assert.AreEqual(response.StatusCode, HttpStatusCode.NotFound);
+                var reqServerKill = new ServerKillRequestModel()
+                {
+                    KillCommand = "killAll"
+                };
+                var reponseKillAll = await client.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Put, "/server/process/kill")
+                    {
+                        Content = new StringContent(
+                            JsonConvert.SerializeObject(reqServerKill),
+                            Encoding.UTF8,
+                            "application/json")
+                    });
+                var resStringKillAll = await reponseKillAll.Content.ReadAsStringAsync();
+                var resModelKillAll = JsonConvert.DeserializeObject<ServerKillResponseModel[]>(resStringKillAll);
+                Assert.AreEqual(reponseKillAll.StatusCode, HttpStatusCode.OK);
+                Assert.AreEqual(resModelKillAll.Length, 0);
             }
 
             MethodInfo onStop = typeof(WebService)

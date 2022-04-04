@@ -76,6 +76,16 @@ namespace ServerAgent.Monitoring.Interactor
             }
         }
 
+        public int ExitCode
+        {
+            get
+            {
+                if (IsDead)
+                    return process?.ExitCode ?? int.MaxValue;
+                return int.MaxValue;
+            }
+        }
+
         private bool IsStopped
         {
             get
@@ -131,10 +141,20 @@ namespace ServerAgent.Monitoring.Interactor
             }
         }
 
-        public void Close()
+        public void Kill()
         {
             process.Kill();
-            logger.Info($"on kill process. {ServerName}");
+            logger.Info($"success kill process. {ServerName}, ExitCode: {process.ExitCode}");
+        }
+
+        public bool Close()
+        {
+            bool ret = process.CloseMainWindow();
+            if (ret)
+                logger.Info($"success close process. {ServerName}, ExitCode: {process.ExitCode}");
+            else
+                logger.Info($"failed close process. {ServerName}, HasExited: {process.HasExited}");
+            return ret;
         }
 
         private void OutputDataReceived(object sender, DataReceivedEventArgs e)

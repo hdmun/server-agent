@@ -97,6 +97,8 @@
     <Compile Include="Web\Controller\IController.cs" />
     <Compile Include="Web\Controller\ServerController.cs" />
     <Compile Include="Web\IWebServiceContext.cs" />
+    <Compile Include="Web\Model\ServerKillRequestModel.cs" />
+    <Compile Include="Web\Model\ServerKillResponseModel.cs" />
     <Compile Include="Web\Model\ServerMonitoringModel.cs" />
     <Compile Include="Web\Route.cs" />
     <Compile Include="Web\RouteAttribute.cs" />

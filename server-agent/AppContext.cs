@@ -7,6 +7,7 @@ using ServerAgent.Monitoring.Interactor;
 using ServerAgent.PubSub;
 using ServerAgent.PubSub.Model;
 using ServerAgent.Web;
+using ServerAgent.Web.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -126,12 +127,74 @@ namespace ServerAgent
             }
         }
 
-        public void OnServerKill()
+        public ServerKillResponseModel[] OnServerKill()
+        {
+            var response = new List<ServerKillResponseModel>();
+            foreach (var process in Processes)
+            {
+                process.Kill();
+                response.Add(new ServerKillResponseModel()
+                {
+                    ServerName = process.ServerName,
+                    ExitCode = process.ExitCode,
+                    Close = process.IsDead
+                });
+            }
+
+            return response.ToArray();
+        }
+
+        public ServerKillResponseModel[] OnServerClose()
+        {
+            var response = new List<ServerKillResponseModel>();
+            foreach (var process in Processes)
+            {
+                bool closed = process.Close();
+                response.Add(new ServerKillResponseModel()
+                {
+                    ServerName = process.ServerName,
+                    ExitCode = process.ExitCode,
+                    Close = closed
+                });
+            }
+
+            return response.ToArray();
+        }
+
+        public ServerKillResponseModel OnServerKill(string serverName)
         {
             foreach (var process in Processes)
             {
-                process.Close();
+                if (process.ServerName == serverName)
+                {
+                    process.Kill();
+                    return new ServerKillResponseModel()
+                    {
+                        ServerName = process.ServerName,
+                        ExitCode = process.ExitCode,
+                        Close = process.IsDead
+                    };
+                }
             }
+            return null;
+        }
+
+        public ServerKillResponseModel OnServerClose(string serverName)
+        {
+            foreach (var process in Processes)
+            {
+                if (process.ServerName == serverName)
+                {
+                    bool closed = process.Close();
+                    return new ServerKillResponseModel()
+                    {
+                        ServerName = process.ServerName,
+                        ExitCode = process.ExitCode,
+                        Close = closed
+                    };
+                }
+            }
+            return null;
         }
     }
 }
