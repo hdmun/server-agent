@@ -92,6 +92,9 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="Data\Provider\SqlProvider.cs" />
+    <Compile Include="Monitoring\Interactor\DateTimeCheker.cs" />
+    <Compile Include="Monitoring\Interactor\ITimeChecker.cs" />
+    <Compile Include="Monitoring\Interactor\TimeGetTimeChecker.cs" />
     <Compile Include="Monitoring\Model\JsonConfigModel.cs" />
     <Compile Include="PubSub\Model\HostInfoModel.cs" />
     <Compile Include="Web\Controller\IController.cs" />

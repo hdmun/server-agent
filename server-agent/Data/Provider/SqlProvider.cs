@@ -77,7 +77,7 @@ namespace ServerAgent.Data.Provider
             {
                 DetectTimeModel detectTime = new DetectTimeModel();
 
-                SqlCommand cmd = new SqlCommand("GetDeadlockTime", conn);
+                SqlCommand cmd = new SqlCommand("GetConfigValue", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter
                 {
@@ -85,6 +85,13 @@ namespace ServerAgent.Data.Provider
                     ParameterName = "@hostName",
                     SqlDbType = SqlDbType.VarChar,
                     Value = Dns.GetHostName()
+                });
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    ParameterName = "@key",
+                    SqlDbType = SqlDbType.VarChar,
+                    Value = "DeadlockTime"
                 });
 
                 var deadlockMin = cmd.ExecuteScalar();
@@ -93,7 +100,7 @@ namespace ServerAgent.Data.Provider
 
                 detectTime.DeadlockMin = uint.Parse(deadlockMin.ToString());
 
-                cmd = new SqlCommand("GetStoppedTime", conn);
+                cmd = new SqlCommand("GetConfigValue", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter
                 {
@@ -102,12 +109,42 @@ namespace ServerAgent.Data.Provider
                     SqlDbType = SqlDbType.VarChar,
                     Value = Dns.GetHostName()
                 });
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    ParameterName = "@key",
+                    SqlDbType = SqlDbType.VarChar,
+                    Value = "StoppedTime"
+                });
 
                 var stoppedMin = cmd.ExecuteScalar();
                 if (stoppedMin == null)
                     return null;
 
                 detectTime.StoppedMin = uint.Parse(stoppedMin.ToString());
+
+                cmd = new SqlCommand("GetConfigValue", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    ParameterName = "@hostName",
+                    SqlDbType = SqlDbType.VarChar,
+                    Value = Dns.GetHostName()
+                });
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    ParameterName = "@key",
+                    SqlDbType = SqlDbType.VarChar,
+                    Value = "Checker"
+                });
+
+                var checkerName = cmd.ExecuteScalar();
+                if (checkerName == null)
+                    return null;
+
+                detectTime.Checker = checkerName.ToString();
 
                 return detectTime;
             }

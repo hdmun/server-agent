@@ -7,8 +7,10 @@ GO
 INSERT INTO [dbo].[Config] ([HostName], [Key], [Value])
     VALUES ('LAPTOP-PR4G61PI', 'DeadlockTime', '3'),
            ('LAPTOP-PR4G61PI', 'StoppedTime', '30'),
+           ('LAPTOP-PR4G61PI', 'Checker', 'datetime'),
            ('DESKTOP-UNOS40A', 'DeadlockTime', '3'),
-           ('DESKTOP-UNOS40A', 'StoppedTime', '30')
+           ('DESKTOP-UNOS40A', 'StoppedTime', '30'),
+           ('DESKTOP-UNOS40A', 'Checker', 'datetime')
 GO
 
 

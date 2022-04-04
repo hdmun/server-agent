@@ -13,26 +13,19 @@ namespace ServerAgent.Monitoring.Interactor
 
         public readonly string FilePath;
         public readonly string ServerName;
-        private readonly DetectTimeModel detectTime;
+        private readonly ITimeChecker timeChecker;
 
         private Process process;
-        private ProcessInfoModel processInfo;
 
-        public ServerProcess(ServerInfoModel serverInfo, DetectTimeModel detectTime)
+        public ServerProcess(ServerInfoModel serverInfo, ITimeChecker timeChecker)
         {
             logger = LogManager.GetLogger(typeof(ServerProcess));
 
             FilePath = serverInfo.BinaryPath;
             ServerName = serverInfo.ServerName;
-            this.detectTime = detectTime;
+            this.timeChecker = timeChecker;
 
             process = null;
-            processInfo = new ProcessInfoModel()
-            {
-                ProcessingTime = 0,
-                ThreadId = 0,
-                LastReceiveTime = DateTime.Now
-            };
         }
 
         public void OnMonitoring()
@@ -56,13 +49,13 @@ namespace ServerAgent.Monitoring.Interactor
         {
             get
             {
-                lock (processInfo)
+                lock (timeChecker)
                 {
                     return new ProcessInfoModel()
                     {
-                        ProcessingTime = processInfo.ProcessingTime,
-                        ThreadId = processInfo.ThreadId,
-                        LastReceiveTime = processInfo.LastReceiveTime
+                        ProcessingTime = timeChecker.ProcessingTime,
+                        ThreadId = timeChecker.ThreadId,
+                        LastReceiveTime = timeChecker.LastReceiveTime
                     };
                 }
             }
@@ -90,22 +83,8 @@ namespace ServerAgent.Monitoring.Interactor
         {
             get
             {
-                lock (processInfo)
-                {
-                    if (processInfo.ProcessingTime > detectTime.StoppedMin)
-                        return true;
-
-                    DateTime lastRecvTime = processInfo.LastReceiveTime;
-                    var stoppedReciveTime = lastRecvTime.AddMinutes(detectTime.StoppedMin);
-                    if (stoppedReciveTime <= DateTime.Now)
-                        return true;
-
-                    var stoppedProcessingTime = lastRecvTime.AddMinutes(detectTime.StoppedMin - processInfo.ProcessingTime);
-                    if (stoppedProcessingTime <= DateTime.Now)
-                        return true;
-
-                    return false;
-                }
+                lock (timeChecker)
+                    return timeChecker.IsStopped;
             }
         }
 
@@ -124,11 +103,8 @@ namespace ServerAgent.Monitoring.Interactor
                 };
                 process.OutputDataReceived += OutputDataReceived;
 
-                processInfo.ProcessingTime = 0;
-                processInfo.ThreadId = 0;
-                processInfo.LastReceiveTime = DateTime.Now;
-
                 bool started = process.Start();
+                timeChecker.Start();
                 process.BeginOutputReadLine();
 
                 logger.Info($"start process. {ServerName}, started: {started}");
@@ -165,12 +141,8 @@ namespace ServerAgent.Monitoring.Interactor
             try
             {
                 var model = JsonConvert.DeserializeObject<ProcessInfoModel>(e.Data);
-                lock (processInfo)
-                {
-                    processInfo.ProcessingTime = model.ProcessingTime / 60;  // second
-                    processInfo.ThreadId = model.ThreadId;
-                    processInfo.LastReceiveTime = DateTime.Now;
-                }
+                lock (timeChecker)
+                    timeChecker.Update(model);
             }
             catch (JsonSerializationException)
             {

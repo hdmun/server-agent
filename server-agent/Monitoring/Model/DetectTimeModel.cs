@@ -9,5 +9,8 @@ namespace ServerAgent.Monitoring.Model
 
         [JsonProperty("stopped", Required = Required.Always)]
         public uint StoppedMin { get; set; }
+
+        [JsonProperty("checker", Required = Required.Always)]
+        public string Checker { get; set; }
     }
 }

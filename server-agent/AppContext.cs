@@ -70,7 +70,7 @@ namespace ServerAgent
             Processes = new List<ServerProcess>();
             foreach (var serverInfo in dataConnector.ServerInfo())
             {
-                Processes.Add(new ServerProcess(serverInfo, detectTime));
+                Processes.Add(new ServerProcess(serverInfo, TimeCheckerFactory.Create(detectTime)));
             }
 
             logger.Info($"load process list, process count: {Processes.Count}");

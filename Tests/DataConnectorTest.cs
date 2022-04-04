@@ -22,7 +22,11 @@ namespace Tests
             var detectTime = dataConnector.DetectTime();
             var Processes = new List<ServerProcess>();
             foreach (var serverInfo in dataConnector.ServerInfo())
-                Processes.Add(new ServerProcess(serverInfo, detectTime));
+            {
+                var timeChekr = TimeCheckerFactory.Create(detectTime);
+                Assert.AreNotEqual(timeChekr, null);
+                Processes.Add(new ServerProcess(serverInfo, timeChekr));
+            }
 
             Assert.AreEqual(Processes.Count, 2);
             Assert.AreNotEqual(detectTime, null);
@@ -38,7 +42,11 @@ namespace Tests
             var detectTime = dataConnector.DetectTime();
             var Processes = new List<ServerProcess>();
             foreach (var serverInfo in dataConnector.ServerInfo())
-                Processes.Add(new ServerProcess(serverInfo, detectTime));
+            {
+                var timeChekr = TimeCheckerFactory.Create(detectTime);
+                Assert.AreNotEqual(timeChekr, null);
+                Processes.Add(new ServerProcess(serverInfo, timeChekr));
+            }
 
             Assert.AreEqual(Processes.Count, 2);
             Assert.AreNotEqual(detectTime, null);
