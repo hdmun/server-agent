@@ -1,4 +1,5 @@
 ﻿using log4net;
+using System;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
@@ -47,7 +48,14 @@ namespace ServerAgent.Monitoring
             {
                 await Task.Delay(1000);
 
-                context.OnMonitoring();
+                try
+                {
+                    context.OnMonitoring();
+                }
+                catch (Exception ex)
+                {
+                    logger.Error("Exception - IMonitoringContext.OnMonitoring", ex);
+                }
 
                 if (!context.Monitoring)
                 {
@@ -56,7 +64,14 @@ namespace ServerAgent.Monitoring
 
                 foreach (var process in context.Processes)
                 {
-                    process.OnMonitoring();
+                    try
+                    {
+                        process.OnMonitoring();
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error("Exception - Process.OnMonitoring", ex);
+                    }
                 }
             }
         }
