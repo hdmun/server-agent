@@ -120,6 +120,7 @@ namespace ServerAgent.Monitoring.Interactor
         public void Kill()
         {
             process.Kill();
+            process.WaitForExit();
             logger.Info($"success kill process. {ServerName}, ExitCode: {process.ExitCode}");
         }
 
@@ -127,7 +128,10 @@ namespace ServerAgent.Monitoring.Interactor
         {
             bool ret = process.CloseMainWindow();
             if (ret)
+            {
+                process.WaitForExit();
                 logger.Info($"success close process. {ServerName}, ExitCode: {process.ExitCode}");
+            }
             else
                 logger.Info($"failed close process. {ServerName}, HasExited: {process.HasExited}");
             return ret;
