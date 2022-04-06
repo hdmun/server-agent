@@ -1,4 +1,5 @@
-﻿using ServerAgent.Monitoring.Model;
+﻿using log4net;
+using ServerAgent.Monitoring.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -10,10 +11,12 @@ namespace ServerAgent.Data.Provider
 {
     public class SqlProvider : IDataProvider
     {
+        private readonly ILog logger;
         private SqlConnection conn;
 
         public SqlProvider()
         {
+            logger = LogManager.GetLogger(typeof(SqlProvider));
             conn = new SqlConnection();
         }
 
@@ -24,9 +27,9 @@ namespace ServerAgent.Data.Provider
                 conn.ConnectionString = ConfigurationManager.ConnectionStrings["SqlConnectionLogin"].ConnectionString;
                 conn.Open();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // error log
+                logger.Error($"Exception `SqlConnection.Open`", ex);
                 return false;
             }
 
