@@ -64,6 +64,11 @@ namespace ServerAgent
 
             logger.Info($"load process list, process count: {Processes.Count}");
 
+            foreach (var task in serviceTasks)
+            {
+                task.OnStart();
+            }
+
             return true;
         }
 
