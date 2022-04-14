@@ -3,12 +3,11 @@ using ServerAgent.Web.Controller;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.ServiceProcess;
 using System.Threading.Tasks;
 
 namespace ServerAgent.Web
 {
-    public class WebService : ServiceBase
+    public class WebServiceTask : IServiceTask
     {
         private readonly ILog logger;
 
@@ -19,9 +18,9 @@ namespace ServerAgent.Web
         private Task taskJob;
         private bool isRunning;
 
-        public WebService(IWebServiceContext context)
+        public WebServiceTask(IWebServiceContext context)
         {
-            logger = LogManager.GetLogger(typeof(WebService));
+            logger = LogManager.GetLogger(typeof(WebServiceTask));
 
             controllers = new List<IController>()
             {
@@ -37,9 +36,9 @@ namespace ServerAgent.Web
             isRunning = false;
         }
 
-        protected override void OnStart(string[] args)
+        public void OnStart()
         {
-            logger.Info("starting service");
+            logger.Info("starting web service task");
 
             foreach (var controller in controllers)
             {
@@ -50,9 +49,9 @@ namespace ServerAgent.Web
             taskJob = Task.Run(() => RunServer());
         }
 
-        protected override void OnStop()
+        public void OnStop()
         {
-            logger.Info("stopping service");
+            logger.Info("stopping web service task");
 
             isRunning = false;
             httpListener.Stop();

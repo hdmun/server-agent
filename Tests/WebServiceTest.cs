@@ -40,9 +40,9 @@ namespace Tests
         [TestMethod]
         public void MonitoringOn_Test()
         {
-            var service = new WebService(this);
+            var service = new WebServiceTask(this);
 
-            MethodInfo onStart = typeof(WebService)
+            MethodInfo onStart = typeof(WebServiceTask)
                 .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
             onStart.Invoke(service, new object[] { new string[] { } });
 
@@ -91,7 +91,7 @@ namespace Tests
                 Assert.IsFalse(resModelOff.On);
             }
 
-            MethodInfo onStop = typeof(WebService)
+            MethodInfo onStop = typeof(WebServiceTask)
                 .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
             onStop.Invoke(service, new object[] { });
         }
@@ -99,9 +99,9 @@ namespace Tests
         [TestMethod]
         public void MonitoringInvalid_Test()
         {
-            var service = new WebService(this);
+            var service = new WebServiceTask(this);
 
-            MethodInfo onStart = typeof(WebService)
+            MethodInfo onStart = typeof(WebServiceTask)
                 .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
             onStart.Invoke(service, new object[] { new string[] { } });
 
@@ -134,7 +134,7 @@ namespace Tests
                 Assert.AreEqual(Monitoring, false);
             }
 
-            MethodInfo onStop = typeof(WebService)
+            MethodInfo onStop = typeof(WebServiceTask)
                 .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
             onStop.Invoke(service, new object[] { });
         }
@@ -143,9 +143,9 @@ namespace Tests
         [TestMethod]
         public async Task ProcessKill_Test()
         {
-            var service = new WebService(this);
+            var service = new WebServiceTask(this);
 
-            MethodInfo onStart = typeof(WebService)
+            MethodInfo onStart = typeof(WebServiceTask)
                 .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
             onStart.Invoke(service, new object[] { new string[] { } });
 
@@ -174,7 +174,7 @@ namespace Tests
                 Assert.AreEqual(resModelKillAll.Length, 0);
             }
 
-            MethodInfo onStop = typeof(WebService)
+            MethodInfo onStop = typeof(WebServiceTask)
                 .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
             onStop.Invoke(service, new object[] { });
         }

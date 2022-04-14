@@ -12,21 +12,29 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
+using Topshelf;
 
 namespace ServerAgent
 {
-    public class AppContext : IMonitoringContext, IPubSubQueue, IWebServiceContext
+    public class AgentService : IMonitoringContext, IPubSubQueue, IWebServiceContext, ServiceControl
     {
         private readonly ILog logger;
+        private readonly IServiceTask[] serviceTasks;
 
         private bool monitoring;
         private DataConnector dataConnector;
 
         private Queue<PublishModel> publishQueue;
 
-        public AppContext()
+        public AgentService()
         {
-            logger = LogManager.GetLogger(typeof(AppContext));
+            logger = LogManager.GetLogger(typeof(AgentService));
+
+            serviceTasks = new IServiceTask[] {
+                new MonitoringServiceTask(this),
+                new PubSubServiceTask(this),
+                new WebServiceTask(this)
+            };
 
             monitoring = false;
             Processes = null;
@@ -35,6 +43,39 @@ namespace ServerAgent
             dataConnector = new DataConnector(DataProviderFactory.Create(providerName));
 
             publishQueue = new Queue<PublishModel>();
+        }
+
+        bool ServiceControl.Start(HostControl hostControl)
+        {
+            logger.Info("start agent service");
+
+            if (!dataConnector.Open())
+            {
+                logger.Error("failed to open `DataConnector`");
+                throw new Exception("failed to Open, `dataConnector` in AppContext.OnStart");
+            }
+
+            var detectTime = dataConnector.DetectTime();
+            Processes = new List<ServerProcess>();
+            foreach (var serverInfo in dataConnector.ServerInfo())
+            {
+                Processes.Add(new ServerProcess(serverInfo, TimeCheckerFactory.Create(detectTime)));
+            }
+
+            logger.Info($"load process list, process count: {Processes.Count}");
+
+            return true;
+        }
+
+        bool ServiceControl.Stop(HostControl hostControl)
+        {
+            foreach (var task in serviceTasks)
+            {
+                task.OnStop();
+            }
+
+            logger.Info("stop agent service");
+            return true;
         }
 
         public bool Monitoring
@@ -55,26 +96,6 @@ namespace ServerAgent
         }
 
         public List<ServerProcess> Processes { get; private set; }
-
-        public void OnStart()
-        {
-            logger.Info("start context");
-
-            if (!dataConnector.Open())
-            {
-                logger.Error("failed to open `DataConnector`");
-                throw new Exception("failed to Open, `dataConnector` in AppContext.OnStart");
-            }
-
-            var detectTime = dataConnector.DetectTime();
-            Processes = new List<ServerProcess>();
-            foreach (var serverInfo in dataConnector.ServerInfo())
-            {
-                Processes.Add(new ServerProcess(serverInfo, TimeCheckerFactory.Create(detectTime)));
-            }
-
-            logger.Info($"load process list, process count: {Processes.Count}");
-        }
 
         public void OnMonitoring()
         {

@@ -20,9 +20,9 @@ namespace Tests
         [TestMethod]
         public void PublisherTask_ServerInfoTest()
         {
-            var service = new PubSubService(this);
+            var service = new PubSubServiceTask(this);
 
-            MethodInfo onStart = typeof(PubSubService)
+            MethodInfo onStart = typeof(PubSubServiceTask)
                 .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
             onStart.Invoke(service, new object[] { new string[] { } });
 
@@ -41,7 +41,7 @@ namespace Tests
                 string serverInfo2 = subSocket.ReceiveFrameString();
             }
 
-            MethodInfo onStop = typeof(PubSubService)
+            MethodInfo onStop = typeof(PubSubServiceTask)
                .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
             onStop.Invoke(service, new object[] { });
         }
@@ -67,9 +67,9 @@ namespace Tests
         [TestMethod]
         public void PublisherTask_HostInfoTest()
         {
-            var service = new PubSubService(this);
+            var service = new PubSubServiceTask(this);
 
-            MethodInfo onStart = typeof(PubSubService)
+            MethodInfo onStart = typeof(PubSubServiceTask)
                 .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
             onStart.Invoke(service, new object[] { new string[] { } });
 
@@ -95,7 +95,7 @@ namespace Tests
                 Assert.IsFalse(hostInfo2.Monitoring);
             }
 
-            MethodInfo onStop = typeof(PubSubService)
+            MethodInfo onStop = typeof(PubSubServiceTask)
                .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
             onStop.Invoke(service, new object[] { });
         }

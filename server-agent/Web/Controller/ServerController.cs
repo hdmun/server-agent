@@ -16,7 +16,7 @@ namespace ServerAgent.Web.Controller
 
         public ServerController(IWebServiceContext context)
         {
-            logger = LogManager.GetLogger(typeof(WebService));
+            logger = LogManager.GetLogger(typeof(WebServiceTask));
             this.context = context;
         }
 

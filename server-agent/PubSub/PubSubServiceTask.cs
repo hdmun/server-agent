@@ -3,12 +3,11 @@ using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
 using System;
-using System.ServiceProcess;
 using System.Threading.Tasks;
 
 namespace ServerAgent.PubSub
 {
-    public class PubSubService : ServiceBase
+    public class PubSubServiceTask : IServiceTask
     {
         private readonly ILog logger;
         private readonly IPubSubQueue handler;
@@ -16,26 +15,26 @@ namespace ServerAgent.PubSub
 
         private Task publisherTask;
 
-        public PubSubService(IPubSubQueue handler)
+        public PubSubServiceTask(IPubSubQueue handler)
         {
-            logger = LogManager.GetLogger(typeof(PubSubService));
+            logger = LogManager.GetLogger(typeof(PubSubServiceTask));
 
             this.handler = handler;
             isRunning = false;
             publisherTask = null;
         }
 
-        protected override void OnStart(string[] args)
+        public void OnStart()
         {
-            logger.Info("starting service");
+            logger.Info("starting pub/sub service task");
 
             isRunning = true;
             publisherTask = Task.Run(() => PublisherTask());
         }
 
-        protected override void OnStop()
+        public void OnStop()
         {
-            logger.Info("stopping service");
+            logger.Info("stopping pub/sub service task");
 
             isRunning = false;
             Task.WaitAll(new Task[] { publisherTask });
