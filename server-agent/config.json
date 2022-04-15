@@ -6,11 +6,11 @@
   },
   "servers": [
     {
-      "binaryPath": ".\\test-server-dot-net.exe",
+      "binaryPath": ".\\TestServer.exe",
       "serverName": "TestServer1"
     },
     {
-      "binaryPath": ".\\test-server-dot-net.exe",
+      "binaryPath": ".\\TestServer.exe",
       "serverName": "TestServer2"
     }
   ]
