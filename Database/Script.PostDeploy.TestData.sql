@@ -25,6 +25,13 @@ INSERT INTO [dbo].[Config] ([HostName], [Key], [Value])
            ('DESKTOP-UNOS40A', 'Checker', 'datetime')
 GO
 
+TRUNCATE TABLE [dbo].[HostServer]
+GO
+
+INSERT INTO [dbo].[HostServer] ([HostName], [IPAddr])
+    VALUES ('LAPTOP-PR4G61PI', '127.0.0.1'),
+           ('DESKTOP-UNOS40A', 'localhost')
+GO
 
 TRUNCATE TABLE [dbo].[ServerProcess]
 GO

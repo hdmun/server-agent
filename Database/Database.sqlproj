@@ -22,6 +22,8 @@
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
+    <GenerateCreateScript>True</GenerateCreateScript>
+    <DacApplicationName>ServerAgent</DacApplicationName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -63,6 +65,7 @@
     <Build Include="StoredProcedure\GetConfigValue.sql" />
     <Build Include="Tables\Config.sql" />
     <Build Include="StoredProcedure\GetServerProcess.sql" />
+    <Build Include="Tables\HostServer.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ServerProcess.sql" />
