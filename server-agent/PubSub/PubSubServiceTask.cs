@@ -3,6 +3,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
 using System;
+using System.Configuration;
 using System.Threading.Tasks;
 
 namespace ServerAgent.PubSub
@@ -18,6 +19,8 @@ namespace ServerAgent.PubSub
         public PubSubServiceTask(IPubSubQueue handler)
         {
             logger = LogManager.GetLogger(typeof(PubSubServiceTask));
+
+            
 
             this.handler = handler;
             isRunning = false;
@@ -47,7 +50,7 @@ namespace ServerAgent.PubSub
                 logger?.Info("Publisher socket binding...");
 
                 pubSocket.Options.SendHighWatermark = 1000;
-                pubSocket.Bind("tcp://*:12345");
+                pubSocket.Bind(ConfigurationManager.AppSettings["PublisherAddr"]);
 
                 while (isRunning)
                 {

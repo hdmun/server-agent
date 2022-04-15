@@ -24,7 +24,8 @@ namespace ServerAgent.Data.Provider
         {
             try
             {
-                conn.ConnectionString = ConfigurationManager.ConnectionStrings["SqlConnectionLogin"].ConnectionString;
+                var connectionString = ConfigurationManager.AppSettings["SqlConnection"];
+                conn.ConnectionString = ConfigurationManager.ConnectionStrings[connectionString].ConnectionString;
                 conn.Open();
             }
             catch (Exception ex)

@@ -3,10 +3,10 @@ using Newtonsoft.Json;
 using ServerAgent.Web;
 using ServerAgent.Web.Model;
 using System;
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,15 +40,12 @@ namespace Tests
         [TestMethod]
         public void MonitoringOn_Test()
         {
-            var service = new WebServiceTask(this);
-
-            MethodInfo onStart = typeof(WebServiceTask)
-                .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStart.Invoke(service, new object[] { new string[] { } });
+            var serviceTask = new WebServiceTask(this);
+            serviceTask.OnStart();
 
             using (HttpClient client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:80/");
+                client.BaseAddress = new Uri($"{ConfigurationManager.AppSettings["HttpUrl"]}");
                 client.DefaultRequestHeaders
                       .Accept
                       .Add(new MediaTypeWithQualityHeaderValue("application/json"));// ACCEPT 헤더
@@ -91,23 +88,18 @@ namespace Tests
                 Assert.IsFalse(resModelOff.On);
             }
 
-            MethodInfo onStop = typeof(WebServiceTask)
-                .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStop.Invoke(service, new object[] { });
+            serviceTask.OnStop();
         }
 
         [TestMethod]
         public void MonitoringInvalid_Test()
         {
-            var service = new WebServiceTask(this);
-
-            MethodInfo onStart = typeof(WebServiceTask)
-                .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStart.Invoke(service, new object[] { new string[] { } });
+            var serviceTask = new WebServiceTask(this);
+            serviceTask.OnStart();
 
             using (HttpClient client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:80/");
+                client.BaseAddress = new Uri(ConfigurationManager.AppSettings["HttpUrl"]);
                 client.DefaultRequestHeaders
                       .Accept
                       .Add(new MediaTypeWithQualityHeaderValue("application/json"));// ACCEPT 헤더
@@ -134,20 +126,15 @@ namespace Tests
                 Assert.AreEqual(Monitoring, false);
             }
 
-            MethodInfo onStop = typeof(WebServiceTask)
-                .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStop.Invoke(service, new object[] { });
+            serviceTask.OnStop();
         }
 
         [Ignore]
         [TestMethod]
         public async Task ProcessKill_Test()
         {
-            var service = new WebServiceTask(this);
-
-            MethodInfo onStart = typeof(WebServiceTask)
-                .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStart.Invoke(service, new object[] { new string[] { } });
+            var serviceTask = new WebServiceTask(this);
+            serviceTask.OnStart();
 
             using (HttpClient client = new HttpClient())
             {
@@ -174,9 +161,7 @@ namespace Tests
                 Assert.AreEqual(resModelKillAll.Length, 0);
             }
 
-            MethodInfo onStop = typeof(WebServiceTask)
-                .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStop.Invoke(service, new object[] { });
+            serviceTask.OnStop();
         }
     }
 }

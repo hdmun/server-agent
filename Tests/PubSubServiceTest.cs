@@ -7,8 +7,8 @@ using ServerAgent.PubSub;
 using ServerAgent.PubSub.Model;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net;
-using System.Reflection;
 
 namespace Tests
 {
@@ -20,16 +20,13 @@ namespace Tests
         [TestMethod]
         public void PublisherTask_ServerInfoTest()
         {
-            var service = new PubSubServiceTask(this);
-
-            MethodInfo onStart = typeof(PubSubServiceTask)
-                .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStart.Invoke(service, new object[] { new string[] { } });
+            var serviceTask = new PubSubServiceTask(this);
+            serviceTask.OnStart();
 
             using (var subSocket = new SubscriberSocket())
             {
                 subSocket.Options.ReceiveHighWatermark = 1000;
-                subSocket.Connect("tcp://localhost:12345");
+                subSocket.Connect(ConfigurationManager.AppSettings["PublisherAddr"]);
                 subSocket.Subscribe("ServerInfo");
 
                 EnqueueServerInfo();
@@ -41,9 +38,7 @@ namespace Tests
                 string serverInfo2 = subSocket.ReceiveFrameString();
             }
 
-            MethodInfo onStop = typeof(PubSubServiceTask)
-               .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStop.Invoke(service, new object[] { });
+            serviceTask.OnStop();
         }
 
         private void EnqueueServerInfo()
@@ -67,16 +62,13 @@ namespace Tests
         [TestMethod]
         public void PublisherTask_HostInfoTest()
         {
-            var service = new PubSubServiceTask(this);
-
-            MethodInfo onStart = typeof(PubSubServiceTask)
-                .GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStart.Invoke(service, new object[] { new string[] { } });
+            var serviceTask = new PubSubServiceTask(this);
+            serviceTask.OnStart();
 
             using (var subSocket = new SubscriberSocket())
             {
                 subSocket.Options.ReceiveHighWatermark = 1000;
-                subSocket.Connect("tcp://localhost:12345");
+                subSocket.Connect(ConfigurationManager.AppSettings["PublisherAddr"]);
                 subSocket.Subscribe("HostInfo");
 
                 EnqueueHostInfo(true);
@@ -95,9 +87,7 @@ namespace Tests
                 Assert.IsFalse(hostInfo2.Monitoring);
             }
 
-            MethodInfo onStop = typeof(PubSubServiceTask)
-               .GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
-            onStop.Invoke(service, new object[] { });
+            serviceTask.OnStop();
         }
 
         private void EnqueueHostInfo(bool monitoring)

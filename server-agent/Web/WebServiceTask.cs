@@ -2,6 +2,7 @@
 using ServerAgent.Web.Controller;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -30,7 +31,7 @@ namespace ServerAgent.Web
             router = new Router();
 
             httpListener = new HttpListener();
-            httpListener.Prefixes.Add("http://+:80/");
+            httpListener.Prefixes.Add($"{ConfigurationManager.AppSettings["HttpUrl"]}");
 
             taskJob = null;
             isRunning = false;
