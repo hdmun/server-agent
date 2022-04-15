@@ -43,6 +43,8 @@ namespace ServerAgent.Monitoring
 
         private async Task MonitoringJob()
         {
+            logger.Info("start monitoring job task");
+
             while (isRunning)
             {
                 await Task.Delay(1000);
@@ -73,6 +75,8 @@ namespace ServerAgent.Monitoring
                     }
                 }
             }
+
+            logger.Info("stop monitoring job task");
         }
     }
 }

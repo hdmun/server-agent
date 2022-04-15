@@ -14,6 +14,7 @@ namespace ServerAgent.Web
 
         private readonly IList<IController> controllers;
         private readonly IRouter router;
+        private readonly string bindUrl;
         private readonly HttpListener httpListener;
 
         private Task taskJob;
@@ -30,8 +31,9 @@ namespace ServerAgent.Web
 
             router = new Router();
 
+            bindUrl = ConfigurationManager.AppSettings["HttpUrl"];
             httpListener = new HttpListener();
-            httpListener.Prefixes.Add($"{ConfigurationManager.AppSettings["HttpUrl"]}");
+            httpListener.Prefixes.Add($"{bindUrl}");
 
             taskJob = null;
             isRunning = false;
@@ -61,7 +63,16 @@ namespace ServerAgent.Web
 
         private void RunServer()
         {
-            httpListener.Start();
+            try
+            {
+                httpListener.Start();
+                logger?.Info($"start HttpListener: {bindUrl}");
+            }
+            catch (HttpListenerException ex)
+            {
+                logger?.Error("failed to start HttpListener", ex);
+                return;
+            }
 
             while (isRunning)
             {
@@ -82,8 +93,10 @@ namespace ServerAgent.Web
                 catch (HttpListenerException)
                 {
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    logger?.Error("Exception - WebServiceTaskJob", ex);
+
                     if (response != null)
                     {
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -93,6 +106,7 @@ namespace ServerAgent.Web
             }
 
             httpListener.Close();
+            logger?.Info("closed HttpListener");
         }
     }
 }

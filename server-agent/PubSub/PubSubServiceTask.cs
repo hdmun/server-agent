@@ -68,11 +68,13 @@ namespace ServerAgent.PubSub
                     }
                     catch (Exception ex)
                     {
-                        logger?.Error("Exception PublisherTask", ex);
+                        logger?.Error("Exception - PublisherTask", ex);
                     }
 
                     Task.Delay(100).Wait();
                 }
+
+                logger?.Info("closed Publisher socket");
             }
         }
     }
