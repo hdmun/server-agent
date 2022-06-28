@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace ServerAgent.PubSub.Model
+namespace ServerAgent.Messaging.Model
 {
     public class HostInfoModel
     {

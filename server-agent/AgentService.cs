@@ -4,8 +4,8 @@ using ServerAgent.Data;
 using ServerAgent.Data.Provider;
 using ServerAgent.Monitoring;
 using ServerAgent.Monitoring.Interactor;
-using ServerAgent.PubSub;
-using ServerAgent.PubSub.Model;
+using ServerAgent.Messaging;
+using ServerAgent.Messaging.Model;
 using ServerAgent.Web;
 using ServerAgent.Web.Model;
 using System;
@@ -16,7 +16,7 @@ using Topshelf;
 
 namespace ServerAgent
 {
-    public class AgentService : IMonitoringContext, IPubSubQueue, IWebServiceContext, ServiceControl
+    public class AgentService : IMonitoringContext, IMessagingQueue, IWebServiceContext, ServiceControl
     {
         private readonly ILog logger;
         private readonly IServiceTask[] serviceTasks;
@@ -32,7 +32,7 @@ namespace ServerAgent
 
             serviceTasks = new IServiceTask[] {
                 new MonitoringServiceTask(this),
-                new PubSubServiceTask(this),
+                new MessagingServiceTask(this),
                 new WebServiceTask(this)
             };
 

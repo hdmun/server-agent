@@ -106,7 +106,7 @@
     <Compile Include="Monitoring\Interactor\ITimeChecker.cs" />
     <Compile Include="Monitoring\Interactor\TimeGetTimeChecker.cs" />
     <Compile Include="Monitoring\Model\JsonConfigModel.cs" />
-    <Compile Include="PubSub\Model\HostInfoModel.cs" />
+    <Compile Include="Messaging\Model\HostInfoModel.cs" />
     <Compile Include="Web\Controller\IController.cs" />
     <Compile Include="Web\Controller\ServerController.cs" />
     <Compile Include="Web\IWebServiceContext.cs" />
@@ -120,18 +120,18 @@
     <Compile Include="Data\DataConnector.cs" />
     <Compile Include="Monitoring\Model\DetectTimeModel.cs" />
     <Compile Include="Monitoring\Model\ProcessInfoModel.cs" />
-    <Compile Include="PubSub\IPubSubQueue.cs" />
+    <Compile Include="Messaging\IMessagingQueue.cs" />
     <Compile Include="Monitoring\Model\ServerInfoModel.cs" />
     <Compile Include="Data\Provider\IDataProvider.cs" />
     <Compile Include="Data\Provider\JsonProvider.cs" />
     <Compile Include="Monitoring\IMonitoringContext.cs" />
     <Compile Include="Monitoring\Interactor\ServerProcess.cs" />
-    <Compile Include="PubSub\Model\PublishModel.cs" />
-    <Compile Include="PubSub\Model\ServerInfoModel.cs" />
+    <Compile Include="Messaging\Model\PublishModel.cs" />
+    <Compile Include="Messaging\Model\ServerInfoModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Monitoring\MonitoringServiceTask.cs" />
-    <Compile Include="PubSub\PubSubServiceTask.cs" />
+    <Compile Include="Messaging\MessagingServiceTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -3,8 +3,8 @@ using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ServerAgent.PubSub;
-using ServerAgent.PubSub.Model;
+using ServerAgent.Messaging;
+using ServerAgent.Messaging.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,14 +13,14 @@ using System.Net;
 namespace Tests
 {
     [TestClass]
-    public class PubSubServiceTest : IPubSubQueue
+    public class PubSubServiceTest : IMessagingQueue
     {
         private Queue<PublishModel> publishQueue = new Queue<PublishModel>();
 
         [TestMethod]
         public void PublisherTask_ServerInfoTest()
         {
-            var serviceTask = new PubSubServiceTask(this);
+            var serviceTask = new MessagingServiceTask(this);
             serviceTask.OnStart();
 
             using (var subSocket = new SubscriberSocket())
@@ -62,7 +62,7 @@ namespace Tests
         [TestMethod]
         public void PublisherTask_HostInfoTest()
         {
-            var serviceTask = new PubSubServiceTask(this);
+            var serviceTask = new MessagingServiceTask(this);
             serviceTask.OnStart();
 
             using (var subSocket = new SubscriberSocket())

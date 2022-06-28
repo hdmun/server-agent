@@ -6,19 +6,19 @@ using System;
 using System.Configuration;
 using System.Threading.Tasks;
 
-namespace ServerAgent.PubSub
+namespace ServerAgent.Messaging
 {
-    public class PubSubServiceTask : IServiceTask
+    public class MessagingServiceTask : IServiceTask
     {
         private readonly ILog logger;
-        private readonly IPubSubQueue handler;
+        private readonly IMessagingQueue handler;
         private bool isRunning;
 
         private Task publisherTask;
 
-        public PubSubServiceTask(IPubSubQueue handler)
+        public MessagingServiceTask(IMessagingQueue handler)
         {
-            logger = LogManager.GetLogger(typeof(PubSubServiceTask));
+            logger = LogManager.GetLogger(typeof(MessagingServiceTask));
 
             
 

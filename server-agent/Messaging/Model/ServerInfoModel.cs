@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace ServerAgent.PubSub.Model
+namespace ServerAgent.Messaging.Model
 {
     public class ServerInfoModel
     {
