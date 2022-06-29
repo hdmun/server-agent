@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{bf00c61a-71f4-48e1-bbc9-f76ffaa3f2c4}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -69,8 +69,5 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ServerProcess.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <PostDeploy Include="Script.PostDeploy.TestData.sql" />
   </ItemGroup>
 </Project>
