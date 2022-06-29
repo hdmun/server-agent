@@ -5,6 +5,6 @@ AS
 SET NOCOUNT ON
 SET LOCK_TIMEOUT 2000
 
-	SELECT [ServerName], [ProcessPath]
+	SELECT [ServerName], [BinaryPath]
 	FROM [dbo].[ServerProcess]
 	WHERE [HostName] = @hostName
