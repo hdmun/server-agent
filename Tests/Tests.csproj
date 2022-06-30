@@ -98,9 +98,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\server-agent\server-agent.csproj">
+    <ProjectReference Include="..\server-agent\ServerAgent.Service.csproj">
       <Project>{10E67FAD-CCFD-4732-9781-ACB5657B5DFE}</Project>
-      <Name>server-agent</Name>
+      <Name>ServerAgent.Service</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
