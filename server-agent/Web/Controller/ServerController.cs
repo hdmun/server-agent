@@ -9,14 +9,14 @@ using System.Text;
 
 namespace ServerAgent.Web.Controller
 {
-    public class ServerController : IController
+    public class ServerController : ControllerBase
     {
-        private readonly ILog logger;
         private readonly IWebServiceContext context;
 
         public ServerController(IWebServiceContext context)
+            : base(typeof(WebServiceTask))
         {
-            logger = LogManager.GetLogger(typeof(WebServiceTask));
+            
             this.context = context;
         }
 
@@ -25,24 +25,17 @@ namespace ServerAgent.Web.Controller
         {
             try
             {
-                string inputData = null;
-                ServerMonitoringModel model = null;
-                using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
+                var model = GetBody<ServerMonitoringModel>(request);
+                if (model == null)
                 {
-                    inputData = reader.ReadToEnd();
-                    model = JsonConvert.DeserializeObject<ServerMonitoringModel>(inputData);
-                }
-
-                if (model == null || inputData == null)
-                {
-                    logger.Error($"invalid request `/server/monitoring`");
+                    _logger.Error($"invalid request body`/server/monitoring`");
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return response;
                 }
 
                 if (model.HostName != Dns.GetHostName())
                 {
-                    logger.Error($"invalid HostName. {model.HostName}, {Dns.GetHostName()}");
+                    _logger.Error($"invalid request `HostName`. {model.HostName}, {Dns.GetHostName()}");
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return response;
                 }
@@ -51,7 +44,7 @@ namespace ServerAgent.Web.Controller
                 response.StatusCode = (int)HttpStatusCode.Created;
 
                 response.ContentType = "Application/json";
-                byte[] buffer = Encoding.UTF8.GetBytes(inputData);
+                byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model));
                 response.OutputStream.Write(buffer, 0, buffer.Length);
                 response.OutputStream.Close();
             }
@@ -66,22 +59,15 @@ namespace ServerAgent.Web.Controller
         [Route(WebRequestMethods.Http.Put, "/server/process/kill")]
         public HttpListenerResponse PUT_Kill(HttpListenerRequest request, HttpListenerResponse response)
         {
-            string inputData = null;
-            ServerKillRequestModel model = null;
-            using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
+            var model = GetBody<ServerKillRequestModel>(request);
+            if (model == null)
             {
-                inputData = reader.ReadToEnd();
-                model = JsonConvert.DeserializeObject<ServerKillRequestModel>(inputData);
-            }
-
-            if (model == null || inputData == null)
-            {
-                logger.Error($"invalid request `{request.Url}`");
+                _logger.Error($"invalid request body `{request.Url}`");
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return response;
             }
 
-            logger.Info($"http request `{request.Url}`, {model.ServerName}, {model.KillCommand}");
+            _logger.Info($"http request `{request.Url}`, {model.ServerName}, {model.KillCommand}");
 
             ServerKillResponseModel[] closedServers;
             switch (model.KillCommand)
@@ -123,7 +109,7 @@ namespace ServerAgent.Web.Controller
                     return response;
             }
 
-            logger.Info($"http response `{request.Url}`, closed server count: {closedServers.Length}");
+            _logger.Info($"http response `{request.Url}`, closed server count: {closedServers.Length}");
 
             response.ContentType = "Application/json";
             byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(closedServers));

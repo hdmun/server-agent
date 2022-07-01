@@ -12,7 +12,7 @@ namespace ServerAgent.Web
     {
         private readonly ILog logger;
 
-        private readonly IList<IController> controllers;
+        private readonly IList<ControllerBase> controllers;
         private readonly IRouter router;
         private readonly string bindUrl;
         private readonly HttpListener httpListener;
@@ -24,7 +24,7 @@ namespace ServerAgent.Web
         {
             logger = LogManager.GetLogger(typeof(WebServiceTask));
 
-            controllers = new List<IController>()
+            controllers = new List<ControllerBase>()
             {
                 new ServerController(context)
             };

@@ -107,7 +107,7 @@
     <Compile Include="Monitoring\Interactor\TimeGetTimeChecker.cs" />
     <Compile Include="Monitoring\Model\JsonConfigModel.cs" />
     <Compile Include="Messaging\Model\HostInfoModel.cs" />
-    <Compile Include="Web\Controller\IController.cs" />
+    <Compile Include="Web\Controller\ControllerBase.cs" />
     <Compile Include="Web\Controller\ServerController.cs" />
     <Compile Include="Web\IWebServiceContext.cs" />
     <Compile Include="Web\Model\ServerKillRequestModel.cs" />
