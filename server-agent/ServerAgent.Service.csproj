@@ -7,7 +7,7 @@
     <ProjectGuid>{10E67FAD-CCFD-4732-9781-ACB5657B5DFE}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>ServerAgent</RootNamespace>
-    <AssemblyName>server-agent</AssemblyName>
+    <AssemblyName>ServerAgent.Service</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentService.cs" />
+    <Compile Include="Data\Const.cs" />
     <Compile Include="Data\Provider\SqlProvider.cs" />
     <Compile Include="IServiceTask.cs" />
     <Compile Include="Monitoring\Interactor\DateTimeCheker.cs" />
@@ -107,7 +108,7 @@
     <Compile Include="Monitoring\Interactor\TimeGetTimeChecker.cs" />
     <Compile Include="Monitoring\Model\JsonConfigModel.cs" />
     <Compile Include="Messaging\Model\HostInfoModel.cs" />
-    <Compile Include="Web\Controller\IController.cs" />
+    <Compile Include="Web\Controller\ControllerBase.cs" />
     <Compile Include="Web\Controller\ServerController.cs" />
     <Compile Include="Web\IWebServiceContext.cs" />
     <Compile Include="Web\Model\ServerKillRequestModel.cs" />

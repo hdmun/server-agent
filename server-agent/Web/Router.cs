@@ -7,7 +7,7 @@ namespace ServerAgent.Web
 {
     public interface IRouter
     {
-        void Register(IController controller);
+        void Register(ControllerBase controller);
         int Route(HttpListenerContext context);
     }
 
@@ -20,7 +20,7 @@ namespace ServerAgent.Web
             routes = new List<IRoute>();
         }
 
-        public void Register(IController controller)
+        public void Register(ControllerBase controller)
         {
             var routeMethods = controller.GetType()
                 .GetMethods()

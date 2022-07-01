@@ -12,11 +12,11 @@ namespace ServerAgent.Web
 
     public class Route : IRoute
     {
-        private IController Controller { get; set; }
+        private ControllerBase Controller { get; set; }
         private MethodInfo MethodInfo { get; set; }
         private RouteAttribute Attribute { get; set; }
 
-        public Route(IController controller, MethodInfo methodInfo)
+        public Route(ControllerBase controller, MethodInfo methodInfo)
         {
             Controller = controller;
             MethodInfo = methodInfo;
