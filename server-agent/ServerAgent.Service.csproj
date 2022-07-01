@@ -7,7 +7,7 @@
     <ProjectGuid>{10E67FAD-CCFD-4732-9781-ACB5657B5DFE}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>ServerAgent</RootNamespace>
-    <AssemblyName>server-agent</AssemblyName>
+    <AssemblyName>ServerAgent.Service</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
