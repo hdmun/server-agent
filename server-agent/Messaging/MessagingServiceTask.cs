@@ -2,6 +2,7 @@
 using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
+using ServerAgent.Data;
 using System;
 using System.Configuration;
 using System.Threading.Tasks;
@@ -20,8 +21,6 @@ namespace ServerAgent.Messaging
         {
             logger = LogManager.GetLogger(typeof(MessagingServiceTask));
 
-            
-
             this.handler = handler;
             isRunning = false;
             publisherTask = null;
@@ -29,7 +28,7 @@ namespace ServerAgent.Messaging
 
         public void OnStart()
         {
-            logger.Info("starting pub/sub service task");
+            logger.Info("starting messaging service task");
 
             isRunning = true;
             publisherTask = Task.Run(() => PublisherTask());
@@ -37,7 +36,7 @@ namespace ServerAgent.Messaging
 
         public void OnStop()
         {
-            logger.Info("stopping pub/sub service task");
+            logger.Info("stopping messaging service task");
 
             isRunning = false;
             Task.WaitAll(new Task[] { publisherTask });
@@ -59,7 +58,7 @@ namespace ServerAgent.Messaging
                         var item = handler.Dequeue();
                         if (item == null)
                         {
-                            Task.Delay(1000).Wait();
+                            Task.Delay(Const.MessageTaskWaitTime).Wait();
                             continue;
                         }
 
@@ -71,7 +70,7 @@ namespace ServerAgent.Messaging
                         logger?.Error("Exception - PublisherTask", ex);
                     }
 
-                    Task.Delay(100).Wait();
+                    Task.Delay(Const.MessageTaskWaitTime).Wait();
                 }
 
                 logger?.Info("closed Publisher socket");

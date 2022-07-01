@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentService.cs" />
+    <Compile Include="Data\Const.cs" />
     <Compile Include="Data\Provider\SqlProvider.cs" />
     <Compile Include="IServiceTask.cs" />
     <Compile Include="Monitoring\Interactor\DateTimeCheker.cs" />
