@@ -99,6 +99,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActorLite\ActorRefBase.cs" />
+    <Compile Include="ActorLite\ActorContext.cs" />
+    <Compile Include="ActorLite\Mailbox.cs" />
+    <Compile Include="ActorLite\ActorSystem.cs" />
+    <Compile Include="ActorLite\ActorTimer.cs" />
+    <Compile Include="ActorLite\IActorRef.cs" />
     <Compile Include="AgentService.cs" />
     <Compile Include="Data\Const.cs" />
     <Compile Include="Data\Provider\SqlProvider.cs" />
