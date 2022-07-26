@@ -6,6 +6,7 @@ namespace ServerAgent.ActorLite
     {
         void Stop();
 
-        void Tell(object message);
+        void Tell(object message, IActorRef sender = null);
+        Task<T> Ask<T>(object message);
     }
 }

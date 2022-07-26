@@ -25,7 +25,7 @@ namespace ServerAgent.ActorLite
             _actors = new Dictionary<string, IActorRef>();
         }
 
-        public IActorRef ActorOf(ActorRefBase actor, string name)
+        public IActorRef ActorOf(ActorRefBase actor, string name, IActorRef parent = null)
         {
             if (_actors.ContainsKey(name))
             {
@@ -34,7 +34,7 @@ namespace ServerAgent.ActorLite
 
             _actors.Add(name, actor);
 
-            actor.Context = new ActorContext(this);
+            actor.Context = new ActorContext(this, parent);
             actor.Start();
             return actor;
         }

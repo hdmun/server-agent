@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ServerAgent.ActorLite
@@ -7,21 +8,23 @@ namespace ServerAgent.ActorLite
     public abstract class ActorRefBase : IActorRef
     {
         private readonly ConcurrentQueue<Mailbox> _mailboxQueue;
-
-        public ActorContext Context { private get; set; }
+        private readonly Dictionary<string, ActorTimer> _actorTimers;
 
         private bool _start;
         private Task _taskMailbox;
 
-        private ActorTimer _actorTimer;
+        public ActorContext Context { protected get; set; }
+
+        protected IActorRef Sender { get => Context.Sender; }
+        protected IActorRef Self { get => this; }
 
         public ActorRefBase()
         {
             _mailboxQueue = new ConcurrentQueue<Mailbox>();
+            _actorTimers = new Dictionary<string, ActorTimer>();
+
             _start = false;
             _taskMailbox = new Task(() => _processMailbox());
-
-            _actorTimer = new ActorTimer(this);
         }
 
         public void Start()
@@ -46,26 +49,51 @@ namespace ServerAgent.ActorLite
             _taskMailbox.Dispose();
             _taskMailbox = null;
 
-            _actorTimer.Stop();
+            foreach (var timer in _actorTimers.Values)
+                timer.Stop();
         }
 
-        public void Tell(object message)
+        public void Tell(object message, IActorRef sender)
         {
-            Tell(message, this);
+            if (sender == null)
+                sender = Self;
+
+            _mailboxQueue.Enqueue(new Mailbox(message, sender));
         }
 
-        protected void _startSingleTimer(object message, double interval)
+        public Task<T> Ask<T>(object message)
         {
-            _actorTimer.Start(message, interval);
+            var tcs = new TaskCompletionSource<T>();
+            
+            var askActor = new AskActor<T>(tcs);
+            askActor.Start();
+
+            Self.Tell(message, askActor);
+
+            return tcs.Task;
+        }
+
+        protected void StartSingleTimer(string name, object message, double interval)
+        {
+            if (_actorTimers.ContainsKey(name))
+                throw new Exception($"duplicate timer name: {name}");
+
+            var actorTimer = new ActorTimer(this);
+            actorTimer.Start(message, interval);
+            _actorTimers.Add(name, actorTimer);
+        }
+
+        protected void StopSingleTimer(string name)
+        {
+            if (!_actorTimers.ContainsKey(name))
+                throw new Exception($"duplicate timer name: {name}");
+
+            _actorTimers[name].Stop();
+            _actorTimers.Remove(name);
         }
 
         protected abstract void OnStart();
         protected abstract void OnReceive(object message);
-
-        private void Tell(object message, IActorRef sender)
-        {
-            _mailboxQueue.Enqueue(new Mailbox(message, sender));
-        }
 
         private void _processMailbox()
         {
