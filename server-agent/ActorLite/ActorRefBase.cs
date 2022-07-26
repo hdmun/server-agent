@@ -34,6 +34,7 @@ namespace ServerAgent.ActorLite
 
             _start = true;
             _taskMailbox.Start();
+
             OnStart();
         }
 
@@ -41,6 +42,8 @@ namespace ServerAgent.ActorLite
         {
             if (!_start)
                 throw new Exception("Actor is Already Stop");
+
+            OnStop();
 
             _start = false;
 
@@ -64,7 +67,7 @@ namespace ServerAgent.ActorLite
         public Task<T> Ask<T>(object message)
         {
             var tcs = new TaskCompletionSource<T>();
-            
+
             var askActor = new AskActor<T>(tcs);
             askActor.Start();
 
@@ -92,7 +95,8 @@ namespace ServerAgent.ActorLite
             _actorTimers.Remove(name);
         }
 
-        protected abstract void OnStart();
+        protected virtual void OnStart() { }
+        protected virtual void OnStop() { }
         protected abstract void OnReceive(object message);
 
         private void _processMailbox()
