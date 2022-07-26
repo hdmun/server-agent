@@ -99,6 +99,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actor.Message\HttpContextMessage.cs" />
+    <Compile Include="ActorLite\MessagePublisherActor.cs" />
+    <Compile Include="ActorLite\HttpListenActor.cs" />
+    <Compile Include="Actor.Message\PublishMessage.cs" />
     <Compile Include="ActorLite\ActorRefBase.cs" />
     <Compile Include="ActorLite\ActorContext.cs" />
     <Compile Include="ActorLite\AskActor.cs" />
