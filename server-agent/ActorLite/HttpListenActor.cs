@@ -142,7 +142,7 @@ namespace ServerAgent.ActorLite
             }
             catch (Exception)
             {
-                if (context.Response != null)
+                if (context?.Response != null)
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     context.Response?.Close();

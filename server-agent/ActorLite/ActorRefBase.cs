@@ -69,6 +69,7 @@ namespace ServerAgent.ActorLite
             var tcs = new TaskCompletionSource<T>();
 
             var askActor = new AskActor<T>(tcs);
+            askActor.Context = new ActorContext(null, null);
             askActor.Start();
 
             Self.Tell(message, askActor);
