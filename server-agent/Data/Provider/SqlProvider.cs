@@ -1,157 +1,37 @@
-﻿using log4net;
-using ServerAgent.Monitoring.Model;
-using System;
+﻿using ServerAgent.Data.Entity;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
-using System.Net;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Linq;
 
 namespace ServerAgent.Data.Provider
 {
-    public class SqlProvider : IDataProvider
+    public class SqlProvider : DbContext, IDataProvider
     {
-        private readonly ILog logger;
-        private SqlConnection conn;
-
         public SqlProvider()
+            : base("Initial Catalog=ServerAgent;Server=localhost;Integrated Security=SSPI")
         {
-            logger = LogManager.GetLogger(typeof(SqlProvider));
-            conn = new SqlConnection();
         }
 
-        public bool Open()
-        {
-            try
-            {
-                var connectionString = ConfigurationManager.AppSettings["SqlConnection"];
-                conn.ConnectionString = ConfigurationManager.ConnectionStrings[connectionString].ConnectionString;
-                conn.Open();
-            }
-            catch (Exception ex)
-            {
-                logger.Error($"Exception `SqlConnection.Open`", ex);
-                return false;
-            }
+        public DbSet<ServerProcess> ServerProcesses { get; set; }
+        public DbSet<MonitoringConfig> MonitoringConfigs { get; set; }
 
-            return true;
+        public ServerProcess[] FindProcesses(string hostName)
+        {
+            return (from process in ServerProcesses
+                    where process.HostName == hostName
+                    select process).ToArray();
         }
 
-        public void Close()
+        public MonitoringConfig FindMonitoringConfig(string hostName)
         {
-            if (conn?.State == ConnectionState.Open)
-                conn?.Close();
-            conn?.Dispose();
+            return MonitoringConfigs.Find(hostName);
         }
 
-        public List<ServerInfoModel> ServerInfo
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            get
-            {
-                SqlCommand cmd = new SqlCommand("GetServerProcess", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    Direction = ParameterDirection.Input,
-                    ParameterName = "@hostName",
-                    SqlDbType = SqlDbType.VarChar,
-                    Value = Dns.GetHostName()
-                });
-
-                List<ServerInfoModel> serverInfo = new List<ServerInfoModel>();
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        serverInfo.Add(new ServerInfoModel
-                        {
-                            BinaryPath = reader["ProcessPath"].ToString(),
-                            ServerName = reader["ServerName"].ToString()
-                        });
-                    }
-                }
-
-                return serverInfo;
-            }
-        }
-
-        public DetectTimeModel DetectTime
-        {
-            get
-            {
-                DetectTimeModel detectTime = new DetectTimeModel();
-
-                SqlCommand cmd = new SqlCommand("GetConfigValue", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    Direction = ParameterDirection.Input,
-                    ParameterName = "@hostName",
-                    SqlDbType = SqlDbType.VarChar,
-                    Value = Dns.GetHostName()
-                });
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    Direction = ParameterDirection.Input,
-                    ParameterName = "@key",
-                    SqlDbType = SqlDbType.VarChar,
-                    Value = "DeadlockTime"
-                });
-
-                var deadlockMin = cmd.ExecuteScalar();
-                if (deadlockMin == null)
-                    return null;
-
-                detectTime.DeadlockMin = uint.Parse(deadlockMin.ToString());
-
-                cmd = new SqlCommand("GetConfigValue", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    Direction = ParameterDirection.Input,
-                    ParameterName = "@hostName",
-                    SqlDbType = SqlDbType.VarChar,
-                    Value = Dns.GetHostName()
-                });
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    Direction = ParameterDirection.Input,
-                    ParameterName = "@key",
-                    SqlDbType = SqlDbType.VarChar,
-                    Value = "StoppedTime"
-                });
-
-                var stoppedMin = cmd.ExecuteScalar();
-                if (stoppedMin == null)
-                    return null;
-
-                detectTime.StoppedMin = uint.Parse(stoppedMin.ToString());
-
-                cmd = new SqlCommand("GetConfigValue", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    Direction = ParameterDirection.Input,
-                    ParameterName = "@hostName",
-                    SqlDbType = SqlDbType.VarChar,
-                    Value = Dns.GetHostName()
-                });
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    Direction = ParameterDirection.Input,
-                    ParameterName = "@key",
-                    SqlDbType = SqlDbType.VarChar,
-                    Value = "Checker"
-                });
-
-                var checkerName = cmd.ExecuteScalar();
-                if (checkerName == null)
-                    return null;
-
-                detectTime.Checker = checkerName.ToString();
-
-                return detectTime;
-            }
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
         }
     }
 }

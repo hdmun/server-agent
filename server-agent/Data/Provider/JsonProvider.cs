@@ -1,6 +1,5 @@
-﻿using Newtonsoft.Json;
-using ServerAgent.Monitoring.Model;
-using System;
+﻿using Newtonsoft.Json.Linq;
+using ServerAgent.Data.Entity;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,45 +8,31 @@ namespace ServerAgent.Data.Provider
 {
     public class JsonProvider : IDataProvider
     {
-        private readonly string configFilePath = "config.json";
+        private readonly string ConfigFilePath = "config.json";
 
         public JsonProvider()
         {
         }
 
-        public bool Open()
+        private JObject _jsonObjectFromConfig()
         {
-            try
-            {
-                if (!File.Exists(configFilePath))
-                {
-                    // error message
-                    return false;
-                }
+            if (!File.Exists(ConfigFilePath))
+                throw new FileNotFoundException($"`{ConfigFilePath}` not exists");
 
-                string jsonServerInfo = File.ReadAllText(configFilePath);
-                JsonConfigModel jsonConfig = JsonConvert.DeserializeObject<JsonConfigModel>(jsonServerInfo);
-
-                DetectTime = jsonConfig.DetectTime;
-                ServerInfo = jsonConfig.ServerInfo.ToList();
-            }
-            catch (Exception)
-            {
-                // error message
-                return false;
-            }
-
-            return true;
+            var jsonText = File.ReadAllText(ConfigFilePath);
+            return JObject.Parse(jsonText);
         }
 
-        public void Close()
+        public ServerProcess[] FindProcesses(string _)
         {
-            ServerInfo = null;
-            DetectTime = null;
+            var jsonObj = _jsonObjectFromConfig();
+            return jsonObj["servers"].Values<ServerProcess>().ToArray();
         }
 
-        public List<ServerInfoModel> ServerInfo { get; private set; } = null;
-
-        public DetectTimeModel DetectTime { get; private set; } = null;
+        public MonitoringConfig FindMonitoringConfig(string _)
+        {
+            var jsonObj = _jsonObjectFromConfig();
+            return jsonObj["monitoring"].Value<MonitoringConfig>();
+        }
     }
 }

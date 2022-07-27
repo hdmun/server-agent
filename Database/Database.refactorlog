@@ -7,4 +7,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="BinaryPath" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="228d8a1e-4c75-4918-b7c8-379e766b4779" ChangeDateTime="07/18/2022 07:09:08">
+    <Property Name="ElementName" Value="[dbo].[MonitoringConfig].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[MonitoringConfig]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="HostName" />
+  </Operation>
 </Operations>

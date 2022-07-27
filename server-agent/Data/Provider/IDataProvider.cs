@@ -1,17 +1,11 @@
-﻿using ServerAgent.Monitoring.Model;
-using System.Collections.Generic;
+﻿using ServerAgent.Data.Entity;
 
 namespace ServerAgent.Data.Provider
 {
     public interface IDataProvider
     {
-        bool Open();
-
-        void Close();
-
-        List<ServerInfoModel> ServerInfo { get; }
-
-        DetectTimeModel DetectTime { get; }
+        ServerProcess[] FindProcesses(string hostName);
+        MonitoringConfig FindMonitoringConfig(string hostName);
     }
 
     public static class DataProviderFactory
