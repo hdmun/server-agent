@@ -16,7 +16,7 @@
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
@@ -24,6 +24,7 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <GenerateCreateScript>True</GenerateCreateScript>
     <DacApplicationName>ServerAgent</DacApplicationName>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -59,13 +60,10 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Tables" />
-    <Folder Include="StoredProcedure" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="StoredProcedure\GetConfigValue.sql" />
-    <Build Include="Tables\Config.sql" />
-    <Build Include="StoredProcedure\GetServerProcess.sql" />
     <Build Include="Tables\HostServer.sql" />
+    <Build Include="Tables\MonitoringConfig.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ServerProcess.sql" />

@@ -1,5 +1,5 @@
 ﻿{
-  "detect": {
+  "monitoring": {
     "checker": "datetime",
     "deadlock": 3,
     "stopped": 10
