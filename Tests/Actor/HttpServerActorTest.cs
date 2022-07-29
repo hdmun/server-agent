@@ -7,7 +7,6 @@ using ServerAgent.Data.Entity;
 using ServerAgent.Data.Model;
 using ServerAgent.Data.Provider;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -26,8 +25,8 @@ namespace Tests.Actor
                 return new MonitoringConfig();
             }
 
-            public List<ServerProcess> FindProcesses(string hostName)
-                => new List<ServerProcess>();
+            public ServerProcess[] FindProcesses(string hostName)
+                => new ServerProcess[] { };
         }
 
         internal class MonitoringActorMock : MonitoringActor
