@@ -1,8 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using ServerAgent.Data.Entity;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Net;
 
 namespace ServerAgent.Data.Provider
 {
@@ -26,13 +25,18 @@ namespace ServerAgent.Data.Provider
         public ServerProcess[] FindProcesses(string _)
         {
             var jsonObj = _jsonObjectFromConfig();
-            return jsonObj["servers"].Values<ServerProcess>().ToArray();
+            var token = jsonObj.SelectToken("servers");
+            var processes = token.ToObject<ServerProcess[]>();
+            foreach (var process in processes)
+                process.HostName = Dns.GetHostName();
+            return processes;
         }
 
         public MonitoringConfig FindMonitoringConfig(string _)
         {
             var jsonObj = _jsonObjectFromConfig();
-            return jsonObj["monitoring"].Value<MonitoringConfig>();
+            var token = jsonObj.SelectToken("monitoring");
+            return token.ToObject<MonitoringConfig>();
         }
     }
 }
