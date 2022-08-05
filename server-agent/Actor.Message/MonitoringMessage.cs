@@ -1,7 +1,10 @@
-﻿namespace ServerAgent.Actor.Message
+﻿using Newtonsoft.Json;
+
+namespace ServerAgent.Actor.Message
 {
     public class MonitoringMessage
     {
+        [JsonProperty("on", Required = Required.Always)]
         public bool On { get; set; } = false;
     }
 
