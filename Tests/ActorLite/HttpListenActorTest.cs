@@ -12,10 +12,12 @@ namespace Tests.ActorLite
     [TestClass]
     public class HttpListenActorTest
     {
+        private static readonly string _bindUrl = "http://localhost:8080/";
+
         internal class HttpListenActorMock : HttpListenActor
         {
             public HttpListenActorMock()
-                : base("http://localhost:8080/")
+                : base(_bindUrl)
             {
             }
 
@@ -49,12 +51,12 @@ namespace Tests.ActorLite
 
             using (HttpClient client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(_bindUrl);
                 client.DefaultRequestHeaders.Accept
                       .Add(new MediaTypeWithQualityHeaderValue("application/json"));  // ACCEPT 헤더
 
                 var emptyJsonText = new StringContent("{}", Encoding.UTF8, "application/json");
-                var requestMessage = new HttpRequestMessage(HttpMethod.Put, "/server/monitoring")
+                var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), "/server/monitoring")
                 {
                     Content = emptyJsonText
                 };

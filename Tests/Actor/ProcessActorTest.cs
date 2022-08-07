@@ -10,7 +10,13 @@ namespace Tests.Actor
     [TestClass]
     public class ProcessActorTest
     {
-        private ActorSystem _actorSystem = ActorSystem.Create("TestActorSystem");
+        internal class ProcessActorMock : ProcessActor
+        {
+            public ProcessActorMock(ServerProcess serverProcess, MonitoringConfig config)
+                : base(serverProcess, config)
+            {
+            }
+        }
 
         [TestMethod]
         private void AliveCheckMessage_Test()
@@ -27,7 +33,9 @@ namespace Tests.Actor
                 StoppedMin = 2,
                 Checker = "datetime"
             };
-            var processActor = _actorSystem.ActorOf(
+
+            ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
+            var processActor = actorSystem.ActorOf(
                 new ProcessActor(serverProcessEntity, config), "ProcessActorTset");
 
             processActor.Tell(new AliveCheckMessage());
@@ -48,7 +56,8 @@ namespace Tests.Actor
                 StoppedMin = 2,
                 Checker = "datetime"
             };
-            var processActor = _actorSystem.ActorOf(
+            ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
+            var processActor = actorSystem.ActorOf(
                 new ProcessActor(serverProcessEntity, config), "ProcessActorTset");
 
             processActor.Tell(new ProcessKillRequest());
@@ -69,7 +78,8 @@ namespace Tests.Actor
                 StoppedMin = 2,
                 Checker = "datetime"
             };
-            var processActor = _actorSystem.ActorOf(
+            ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
+            var processActor = actorSystem.ActorOf(
                 new ProcessActor(serverProcessEntity, config), "ProcessActorTset");
 
             processActor.Tell(new WorkerThreadMessage());
@@ -90,7 +100,8 @@ namespace Tests.Actor
                 StoppedMin = 2,
                 Checker = "datetime"
             };
-            var processActor = _actorSystem.ActorOf(
+            ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
+            var processActor = actorSystem.ActorOf(
                 new ProcessActor(serverProcessEntity, config), "ProcessActorTset");
 
             processActor.Tell(new ProcessStoppedMessage());
