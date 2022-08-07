@@ -1,6 +1,6 @@
-﻿using ServerAgent.Actor.Message;
+﻿using log4net;
+using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
-using ServerAgent.Data.Model;
 using System;
 using System.Net;
 
@@ -8,6 +8,7 @@ namespace ServerAgent.Actor
 {
     public class HttpServerActor : HttpListenActor
     {
+        private readonly string _hostName = Dns.GetHostName();
         private readonly IActorRef _monitoringActor;
 
         public HttpServerActor(string bindUrl, IActorRef monitoringActor)
@@ -34,6 +35,7 @@ namespace ServerAgent.Actor
                     OnServerMonitoring(message);
                     break;
                 default:
+                    Logger.Error($"request not found `{message.RawUrl}`");
                     message.SendStatus(HttpStatusCode.NotFound);
                     break;
             }
@@ -47,6 +49,7 @@ namespace ServerAgent.Actor
                     OnServerProcessKill(message);
                     break;
                 default:
+                    Logger.Error($"request not found `{message.RawUrl}`");
                     message.SendStatus(HttpStatusCode.NotFound);
                     break;
             }
@@ -56,17 +59,17 @@ namespace ServerAgent.Actor
         {
             try
             {
-                var requestBody = message.GetRequestBody<ServerMonitoringRequest>();
+                var requestBody = message.GetRequestBody<MonitoringMessage>();
                 if (requestBody == null)
                 {
-                    // _logger.Error($"invalid request body`/server/monitoring`");
+                    Logger.Error($"bad request body`/server/monitoring`");
                     message.SendStatus(HttpStatusCode.BadRequest);
                     return;
                 }
 
-                if (requestBody.HostName != Dns.GetHostName())
+                if (requestBody.HostName != _hostName)
                 {
-                    // _logger.Error($"invalid request `HostName`. {model.HostName}, {Dns.GetHostName()}");
+                    Logger.Error($"bad request `HostName`. {requestBody.HostName}, {_hostName}");
                     message.SendStatus(HttpStatusCode.BadRequest);
                     return;
                 }
@@ -74,11 +77,11 @@ namespace ServerAgent.Actor
                 var askTask = _monitoringActor.Ask<MonitoringMessage>(
                     new MonitoringMessage()
                     {
+                        HostName = _hostName,
                         On = requestBody.On
                     });
 
                 var response = askTask.Result;
-
                 if (response.On != requestBody.On)
                 {
                     message.SendStatus(HttpStatusCode.InternalServerError);
@@ -87,8 +90,9 @@ namespace ServerAgent.Actor
 
                 message.SendJson(HttpStatusCode.Created, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Error($"Exception `OnServerMonitoring`", ex);
                 message.SendStatus(HttpStatusCode.InternalServerError);
             }
         }
@@ -100,14 +104,14 @@ namespace ServerAgent.Actor
                 var model = message.GetRequestBody<ServerKillRequest>();
                 if (model == null)
                 {
-                    // _logger.Error($"invalid request body `{request.Url}`");
+                    Logger.Error($"bad request body `{message.Url}`");
                     message.SendStatus(HttpStatusCode.BadRequest);
                     return;
                 }
 
-                // _logger.Info($"http request `{request.Url}`, {model.ServerName}, {model.KillCommand}");
+                Logger.Info($"http request `{message.Url}`, {model.ServerName}, {model.KillCommand}");
 
-                var askTask = _monitoringActor.Ask<ServerKillResponse>(new ServerKillRequestMessage()
+                var askTask = _monitoringActor.Ask<ServerKillResponse>(new ServerKillRequest()
                 {
                     KillCommand = model.KillCommand,
                     ServerName = model.ServerName,
@@ -115,12 +119,13 @@ namespace ServerAgent.Actor
 
                 var response = askTask.Result;
 
-                // _logger.Info($"http response `{request.Url}`, closed server count: {closedServers.Length}");
+                Logger.Info($"http response `{message.Url}`, closed server count: {response.Servers.Length}");
 
                 message.SendJson(HttpStatusCode.Created, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Error($"Exception `OnServerProcessKill`", ex);
                 message.SendStatus(HttpStatusCode.InternalServerError);
             }
         }

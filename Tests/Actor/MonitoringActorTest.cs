@@ -52,13 +52,12 @@ namespace Tests.Actor
             }
         }
 
-        private ActorSystem _actorSystem = ActorSystem.Create("TestActorSystem");
-
         [TestMethod]
         public void TestMonitoringActor_Tell()
         {
+            ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
             var actorMock = new MonitoringActorMock();
-            var monitoringActor = _actorSystem.ActorOf(actorMock, "MonitoringActorMock");
+            var monitoringActor = actorSystem.ActorOf(actorMock, "MonitoringActorMock");
 
             actorMock.Tcs = new TaskCompletionSource<bool>();
             monitoringActor.Tell(new AliveCheckMessage(), null);

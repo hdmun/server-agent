@@ -128,9 +128,6 @@
     <Compile Include="ActorLite\MessagePublisherActor.cs" />
     <Compile Include="ActorLite\HttpListenActor.cs" />
     <Compile Include="Actor.Message\PublishMessage.cs" />
-    <Compile Include="Data\Model\ServerKillRequest.cs" />
-    <Compile Include="Data\Model\ServerKillResponse.cs" />
-    <Compile Include="Data\Model\ServerMonitoringRequest.cs" />
     <Compile Include="Actor.Message\ProcessMessage.cs" />
     <Compile Include="Actor.Message\MonitoringMessage.cs" />
     <Compile Include="Actor.Message\WorkerThreadMessage.cs" />

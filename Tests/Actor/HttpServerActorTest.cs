@@ -4,20 +4,20 @@ using ServerAgent.Actor;
 using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
 using ServerAgent.Data.Entity;
-using ServerAgent.Data.Model;
 using ServerAgent.Data.Provider;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests.Actor
 {
     [TestClass]
     public class HttpServerActorTest
     {
+        private static readonly string _bindUrl = "http://localhost:8080/";
+
         internal class DataProviderMock : IDataProvider
         {
             public MonitoringConfig FindMonitoringConfig(string hostName)
@@ -35,52 +35,30 @@ namespace Tests.Actor
                 : base(new DataProviderMock())
             {
             }
-
-            public TaskCompletionSource<bool> Tcs { private get; set; }
-
-            public bool WaitResult() => Tcs.Task.Result;
-
-            protected override void OnStart()
-            {
-            }
-
-            protected override void OnReceive(object message)
-            {
-                try
-                {
-                    base.OnReceive(message);
-                    Tcs.SetResult(true);
-                }
-                catch (Exception)
-                {
-                    Tcs.SetResult(false);
-                }
-            }
         }
 
         internal class HttpServerActorMock : HttpServerActor
         {
             public HttpServerActorMock(IActorRef monitoringActor)
-                : base("http://localhost:8080/", monitoringActor)
+                : base(_bindUrl, monitoringActor)
             {
             }
         }
 
-        private ActorSystem _actorSystem = ActorSystem.Create("TestActorSystem");
-
         [TestMethod]
         public void HttpServerActor_Test()
         {
-            var monitoringActor = _actorSystem.ActorOf(new MonitoringActorMock(), "MonitoringActorMock");
-            _actorSystem.ActorOf(new HttpServerActorMock(monitoringActor), "HttpServerActorMock");
+            ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
+            var monitoringActor = actorSystem.ActorOf(new MonitoringActorMock(), "MonitoringActorMock");
+            actorSystem.ActorOf(new HttpServerActorMock(monitoringActor), "HttpServerActorMock");
 
             using (HttpClient client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(_bindUrl);
                 client.DefaultRequestHeaders.Accept
                       .Add(new MediaTypeWithQualityHeaderValue("application/json"));  // ACCEPT 헤더
 
-                var requestData = JsonConvert.SerializeObject(new ServerMonitoringRequest()
+                var requestData = JsonConvert.SerializeObject(new MonitoringMessage()
                 {
                     HostName = Dns.GetHostName(),
                     On = true

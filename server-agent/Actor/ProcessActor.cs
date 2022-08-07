@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using log4net;
+using Newtonsoft.Json;
 using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
 using ServerAgent.Data.Entity;
@@ -32,7 +33,7 @@ namespace ServerAgent.Actor
                 case AliveCheckMessage _:
                     OnAliveCheckMessage();
                     break;
-                case ProcessKillMessage _message:
+                case ProcessKillRequest _message:
                     OnKillProcessMessage(_message);
                     break;
                 case WorkerThreadMessage _message:
@@ -43,7 +44,9 @@ namespace ServerAgent.Actor
                     break;
                 default:
                     // invalid message
-                    break;
+                    string exceptMessage = $"Received message of type [{message.GetType()}] - Invalid message in MonitoringActor";
+                    Logger.Error(exceptMessage);
+                    throw new Exception(exceptMessage);  // todo. 커스텀 Exception 클래스 만들어서 처리
             }
         }
 
@@ -64,11 +67,11 @@ namespace ServerAgent.Actor
             _timeCheckActor.Tell(new AliveCheckMessage(), Self);
         }
 
-        private void OnKillProcessMessage(ProcessKillMessage message)
+        private void OnKillProcessMessage(ProcessKillRequest message)
         {
             if (_process == null || _process.HasExited)
             {
-                Sender.Tell(new ProcessKillResponseMessage()
+                Sender.Tell(new ProcessKillResponse()
                 {
                     ServerName = null
                 }, Self);
@@ -79,7 +82,7 @@ namespace ServerAgent.Actor
             {
                 case "kill":
                     KillProcess();
-                    Sender.Tell(new ProcessKillResponseMessage()
+                    Sender.Tell(new ProcessKillResponse()
                     {
                         ServerName = _serverName,
                         ExitCode = _process.ExitCode,
@@ -88,7 +91,7 @@ namespace ServerAgent.Actor
                     break;
                 case "close":
                     var close = CloseProcess();
-                    Sender.Tell(new ProcessKillResponseMessage()
+                    Sender.Tell(new ProcessKillResponse()
                     {
                         ServerName = _serverName,
                         ExitCode = _process.ExitCode,
@@ -96,7 +99,9 @@ namespace ServerAgent.Actor
                     }, Self);
                     break;
                 default:
-                    Sender.Tell(new ProcessKillResponseMessage()
+                    Logger.Error($"invalid command in `ProcessActor.OnKillProcessMessage`, {message.Command}");
+
+                    Sender.Tell(new ProcessKillResponse()
                     {
                         ServerName = null
                     }, Self);
@@ -120,7 +125,7 @@ namespace ServerAgent.Actor
             bool started = _process.Start();
             _process.BeginOutputReadLine();
 
-            // logger.Info($"start process. {_serverName}, started: {started}, path: {_binaryPath}");
+            Logger.Info($"start process. {_serverName}, started: {started}, path: {_binaryPath}");
             return started;
         }
 
@@ -136,7 +141,7 @@ namespace ServerAgent.Actor
                 throw ex;
             }
 
-            // logger.Info($"success kill process. {_serverName}, ExitCode: {process.ExitCode}");
+            Logger.Info($"success kill process. {_serverName}, ExitCode: {_process.ExitCode}");
         }
 
         private bool CloseProcess()
@@ -145,11 +150,11 @@ namespace ServerAgent.Actor
             if (!ret)
             {
                 _process.WaitForExit();
-                // logger.Info($"success close process. {_serverName}, ExitCode: {process.ExitCode}");
+                Logger.Info($"success close process. {_serverName}, ExitCode: {_process.ExitCode}");
             }
             else
             {
-                // logger.Info($"failed close process. {_serverName}, HasExited: {process.HasExited}");
+                Logger.Info($"failed close process. {_serverName}, HasExited: {_process.HasExited}");
             }
 
             return ret;
@@ -173,9 +178,9 @@ namespace ServerAgent.Actor
             {
                 // logger.Error($"json read exception. {e.Data}");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // log
+                Logger.Error($"exception in `ProcessActor.OutputDataReceived`", ex);
             }
         }
     }

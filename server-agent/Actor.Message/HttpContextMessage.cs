@@ -13,6 +13,7 @@ namespace ServerAgent.Actor.Message
 
         public string HttpMethod { get => Request.HttpMethod; }
         public string RawUrl { get => Request.RawUrl; }
+        public string Url { get => Request.Url.ToString(); }
 
         public void SendStatus(HttpStatusCode statusCode)
         {

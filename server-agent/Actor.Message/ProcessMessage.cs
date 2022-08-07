@@ -1,14 +1,21 @@
-﻿namespace ServerAgent.Actor.Message
+﻿using Newtonsoft.Json;
+
+namespace ServerAgent.Actor.Message
 {
-    public class ProcessKillMessage
+    public class ProcessKillRequest
     {
         public string Command { get; set; }
     }
 
-    public class ProcessKillResponseMessage
+    public class ProcessKillResponse
     {
-        public string ServerName { get; set; }
+        [JsonProperty("serverName", Required = Required.Always)]
+        public string ServerName { get; set; } = "";
+
+        [JsonProperty("exitCode", Required = Required.Always)]
         public int ExitCode { get; set; }
+
+        [JsonProperty("close", Required = Required.Always)]
         public bool Close { get; set; }
     }
 
