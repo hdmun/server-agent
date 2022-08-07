@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace ServerAgent.ActorLite
 
         public ActorContext Context { protected get; set; }
 
+        protected ILog Logger { get; set; }
         protected IActorRef Sender { get => Context.Sender; }
         protected IActorRef Self { get => this; }
 
@@ -25,6 +27,8 @@ namespace ServerAgent.ActorLite
 
             _start = false;
             _taskMailbox = new Task(() => _processMailbox());
+
+            Logger = LogManager.GetLogger(GetType());
         }
 
         public void Start()
@@ -120,10 +124,10 @@ namespace ServerAgent.ActorLite
                     OnReceive(mailbox.Message);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _start = false;
-                // OnException(ex);
+                Logger?.Error($"exception `{GetType().FullName}._processMailbox`", ex);
             }
         }
     }

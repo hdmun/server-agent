@@ -1,4 +1,5 @@
-﻿using ServerAgent.Actor.Message;
+﻿using log4net;
+using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
 using ServerAgent.Data.Entity;
 using ServerAgent.Data.Provider;
@@ -58,8 +59,8 @@ namespace ServerAgent.Actor
                 default:
                     // invalid message
                     string exceptMessage = $"Received message of type [{message.GetType()}] - Invalid message in MonitoringActor";
-                    Console.WriteLine(exceptMessage);
-                    throw new Exception(exceptMessage);
+                    Logger.Error(exceptMessage);
+                    throw new Exception(exceptMessage);  // todo. 커스텀 Exception 클래스 만들어서 처리
             }
         }
 

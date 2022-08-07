@@ -1,4 +1,5 @@
-﻿using ServerAgent.Actor.Message;
+﻿using log4net;
+using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
 using ServerAgent.Data.Entity;
 using System;
@@ -55,6 +56,7 @@ namespace ServerAgent.Actor
                     OnWorkerThreadMessage(_message);
                     break;
                 default:
+                    Logger.Error($"Received message of type [{message.GetType()}] - Invalid message in DateTimeCheckActor");
                     break;
             }
         }
@@ -124,6 +126,7 @@ namespace ServerAgent.Actor
                     OnWorkerThreadMessage(_message);
                     break;
                 default:
+                    Logger.Error($"Received message of type [{message.GetType()}] - Invalid message in DateTimeCheckActor");
                     break;
             }
         }

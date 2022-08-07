@@ -19,7 +19,7 @@ namespace ServerAgent.ActorLite
                     _tcs.SetResult(t);
                     break;
                 default:
-                    // error
+                    Logger.Error($"Received message of type [{message.GetType()}] - Invalid message in {GetType().FullName}");
                     break;
             }
         }

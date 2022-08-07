@@ -60,6 +60,7 @@ namespace ServerAgent.ActorLite
                     OnDeleteMessage(message);
                     break;
                 default:
+                    Logger.Error($"request not found `{message.HttpMethod}:{message.RawUrl}`");
                     message.SendStatus(HttpStatusCode.NotFound);
                     break;
             }
@@ -90,11 +91,13 @@ namespace ServerAgent.ActorLite
             try
             {
                 _httpListener.Start();
-                // logger?.Info($"start HttpListener: {bindUrl}");
+                Logger?.Info($"start HttpListener, Prefix Count: {_httpListener.Prefixes.Count}");
+                foreach (var prefix in _httpListener.Prefixes)
+                    Logger?.Info($"listening: {prefix}");
             }
-            catch (HttpListenerException)
+            catch (HttpListenerException ex)
             {
-                // logger?.Error("failed to start HttpListener", ex);
+                Logger?.Error("failed to start HttpListener", ex);
                 return;
             }
 
@@ -111,14 +114,14 @@ namespace ServerAgent.ActorLite
 
                     asyncResult = _httpListener.BeginGetContext(GetContextCallback, _httpListener);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // logger?.Error("Exception - HttpServerActor", ex);
+                    Logger?.Error("exception in `HttpServerActor.RunServer`", ex);
                 }
             }
 
             _httpListener.Close();
-            // logger?.Info("closed HttpListener");
+            Logger?.Info("closed HttpListener");
         }
 
         private void GetContextCallback(IAsyncResult ar)
@@ -140,8 +143,10 @@ namespace ServerAgent.ActorLite
                 };
                 Self.Tell(requestMessage);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger?.Error("exception in `HttpServerActor.GetContextCallback`", ex);
+
                 if (context?.Response != null)
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
