@@ -4,18 +4,24 @@ namespace ServerAgent.Actor.Message
 {
     public class MonitoringMessage
     {
+        [JsonProperty("hostName", Required = Required.Always)]
+        public string HostName { get; set; }
+
         [JsonProperty("on", Required = Required.Always)]
-        public bool On { get; set; } = false;
+        public bool On { get; set; }
     }
 
-    public class ServerKillRequestMessage
+    public class ServerKillRequest
     {
-        public string KillCommand { get; set; }
+        [JsonProperty("killCommand", Required = Required.Always)]
+        public string KillCommand { get; set; } = "";
+
+        [JsonProperty("serverName", Required = Required.Always)]
         public string ServerName { get; set; } = "";
     }
 
-    public class ServerKillResponseMessage
+    public class ServerKillResponse
     {
-        public ProcessKillResponseMessage[] Servers { get; set; }
+        public ProcessKillResponse[] Servers { get; set; }
     }
 }

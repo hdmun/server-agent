@@ -52,7 +52,7 @@ namespace ServerAgent.Actor
                     _running = _message.On;
                     Sender.Tell(_message, Self);
                     break;
-                case ServerKillRequestMessage _message:
+                case ServerKillRequest _message:
                     OnServerKillRequestMessage(_message);
                     break;
                 default:
@@ -76,9 +76,9 @@ namespace ServerAgent.Actor
             }
         }
 
-        private void OnServerKillRequestMessage(ServerKillRequestMessage message)
+        private void OnServerKillRequestMessage(ServerKillRequest message)
         {
-            var askMessage = new ProcessKillMessage()
+            var askMessage = new ProcessKillRequest()
             {
                 Command = message.KillCommand
             };
@@ -88,23 +88,23 @@ namespace ServerAgent.Actor
                 var actor = FindTargetActor(message.ServerName);
                 if (actor == null)
                 {
-                    Sender.Tell(new ServerKillResponseMessage()
+                    Sender.Tell(new ServerKillResponse()
                     {
                         Servers = null
                     }, Self);
                     return;
                 }
 
-                var askTask = actor.Ask<ProcessKillResponseMessage>(askMessage);
-                Sender.Tell(new ServerKillResponseMessage()
+                var askTask = actor.Ask<ProcessKillResponse>(askMessage);
+                Sender.Tell(new ServerKillResponse()
                 {
-                    Servers = new ProcessKillResponseMessage[] { askTask.Result }
+                    Servers = new ProcessKillResponse[] { askTask.Result }
                 }, Self);
             }
             else
             {
-                var response = AskProcessActorAll<ProcessKillResponseMessage>(askMessage);
-                Sender.Tell(new ServerKillResponseMessage()
+                var response = AskProcessActorAll<ProcessKillResponse>(askMessage);
+                Sender.Tell(new ServerKillResponse()
                 {
                     Servers = response
                 }, Self);

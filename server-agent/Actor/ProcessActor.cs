@@ -32,7 +32,7 @@ namespace ServerAgent.Actor
                 case AliveCheckMessage _:
                     OnAliveCheckMessage();
                     break;
-                case ProcessKillMessage _message:
+                case ProcessKillRequest _message:
                     OnKillProcessMessage(_message);
                     break;
                 case WorkerThreadMessage _message:
@@ -64,11 +64,11 @@ namespace ServerAgent.Actor
             _timeCheckActor.Tell(new AliveCheckMessage(), Self);
         }
 
-        private void OnKillProcessMessage(ProcessKillMessage message)
+        private void OnKillProcessMessage(ProcessKillRequest message)
         {
             if (_process == null || _process.HasExited)
             {
-                Sender.Tell(new ProcessKillResponseMessage()
+                Sender.Tell(new ProcessKillResponse()
                 {
                     ServerName = null
                 }, Self);
@@ -79,7 +79,7 @@ namespace ServerAgent.Actor
             {
                 case "kill":
                     KillProcess();
-                    Sender.Tell(new ProcessKillResponseMessage()
+                    Sender.Tell(new ProcessKillResponse()
                     {
                         ServerName = _serverName,
                         ExitCode = _process.ExitCode,
@@ -88,7 +88,7 @@ namespace ServerAgent.Actor
                     break;
                 case "close":
                     var close = CloseProcess();
-                    Sender.Tell(new ProcessKillResponseMessage()
+                    Sender.Tell(new ProcessKillResponse()
                     {
                         ServerName = _serverName,
                         ExitCode = _process.ExitCode,
@@ -96,7 +96,7 @@ namespace ServerAgent.Actor
                     }, Self);
                     break;
                 default:
-                    Sender.Tell(new ProcessKillResponseMessage()
+                    Sender.Tell(new ProcessKillResponse()
                     {
                         ServerName = null
                     }, Self);

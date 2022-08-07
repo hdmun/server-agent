@@ -1,6 +1,5 @@
 ﻿using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
-using ServerAgent.Data.Model;
 using System;
 using System.Net;
 
@@ -8,6 +7,7 @@ namespace ServerAgent.Actor
 {
     public class HttpServerActor : HttpListenActor
     {
+        private readonly string _hostName = Dns.GetHostName();
         private readonly IActorRef _monitoringActor;
 
         public HttpServerActor(string bindUrl, IActorRef monitoringActor)
@@ -56,7 +56,7 @@ namespace ServerAgent.Actor
         {
             try
             {
-                var requestBody = message.GetRequestBody<ServerMonitoringRequest>();
+                var requestBody = message.GetRequestBody<MonitoringMessage>();
                 if (requestBody == null)
                 {
                     // _logger.Error($"invalid request body`/server/monitoring`");
@@ -64,7 +64,7 @@ namespace ServerAgent.Actor
                     return;
                 }
 
-                if (requestBody.HostName != Dns.GetHostName())
+                if (requestBody.HostName != _hostName)
                 {
                     // _logger.Error($"invalid request `HostName`. {model.HostName}, {Dns.GetHostName()}");
                     message.SendStatus(HttpStatusCode.BadRequest);
@@ -74,11 +74,11 @@ namespace ServerAgent.Actor
                 var askTask = _monitoringActor.Ask<MonitoringMessage>(
                     new MonitoringMessage()
                     {
+                        HostName = _hostName,
                         On = requestBody.On
                     });
 
                 var response = askTask.Result;
-
                 if (response.On != requestBody.On)
                 {
                     message.SendStatus(HttpStatusCode.InternalServerError);
@@ -107,7 +107,7 @@ namespace ServerAgent.Actor
 
                 // _logger.Info($"http request `{request.Url}`, {model.ServerName}, {model.KillCommand}");
 
-                var askTask = _monitoringActor.Ask<ServerKillResponse>(new ServerKillRequestMessage()
+                var askTask = _monitoringActor.Ask<ServerKillResponse>(new ServerKillRequest()
                 {
                     KillCommand = model.KillCommand,
                     ServerName = model.ServerName,
@@ -119,8 +119,9 @@ namespace ServerAgent.Actor
 
                 message.SendJson(HttpStatusCode.Created, response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Error($"Exception `OnServerProcessKill`", ex);
                 message.SendStatus(HttpStatusCode.InternalServerError);
             }
         }

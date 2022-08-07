@@ -51,7 +51,7 @@ namespace Tests.Actor
             var processActor = _actorSystem.ActorOf(
                 new ProcessActor(serverProcessEntity, config), "ProcessActorTset");
 
-            processActor.Tell(new ProcessKillMessage());
+            processActor.Tell(new ProcessKillRequest());
         }
 
         [TestMethod]

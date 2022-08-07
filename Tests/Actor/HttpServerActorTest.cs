@@ -4,7 +4,6 @@ using ServerAgent.Actor;
 using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
 using ServerAgent.Data.Entity;
-using ServerAgent.Data.Model;
 using ServerAgent.Data.Provider;
 using System;
 using System.Net;
@@ -80,7 +79,7 @@ namespace Tests.Actor
                 client.DefaultRequestHeaders.Accept
                       .Add(new MediaTypeWithQualityHeaderValue("application/json"));  // ACCEPT 헤더
 
-                var requestData = JsonConvert.SerializeObject(new ServerMonitoringRequest()
+                var requestData = JsonConvert.SerializeObject(new MonitoringMessage()
                 {
                     HostName = Dns.GetHostName(),
                     On = true
