@@ -56,6 +56,9 @@ namespace ServerAgent.ActorLite
                 case "PATCH":
                     OnPatchMessage(message);
                     break;
+                case "PUT":
+                    OnPutMessage(message);
+                    break;
                 case "DELETE":
                     OnDeleteMessage(message);
                     break;
@@ -79,6 +82,11 @@ namespace ServerAgent.ActorLite
         protected virtual void OnPatchMessage(HttpContextMessage message)
         {
             throw new NotImplementedException("Not Implemention `OnPatchMessage`");
+        }
+
+        protected virtual void OnPutMessage(HttpContextMessage message)
+        {
+            throw new NotImplementedException("Not Implemention `OnPutMessage`");
         }
 
         protected virtual void OnDeleteMessage(HttpContextMessage message)

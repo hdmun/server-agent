@@ -39,8 +39,22 @@ namespace ServerAgent.Actor
         {
             switch (message.RawUrl)
             {
-                case "/server/monitoring":
+                case "/monitoring":
                     OnServerMonitoring(message);
+                    break;
+                default:
+                    Logger.Error($"request not found `{message.RawUrl}`");
+                    message.SendStatus(HttpStatusCode.NotFound);
+                    break;
+            }
+        }
+
+        protected override void OnPutMessage(HttpContextMessage message)
+        {
+            switch (message.RawUrl)
+            {
+                case "/process/kill":
+                    OnServerProcessKill(message);
                     break;
                 default:
                     Logger.Error($"request not found `{message.RawUrl}`");
@@ -51,16 +65,7 @@ namespace ServerAgent.Actor
 
         protected override void OnDeleteMessage(HttpContextMessage message)
         {
-            switch (message.RawUrl)
-            {
-                case "/server/process/kill":
-                    OnServerProcessKill(message);
-                    break;
-                default:
-                    Logger.Error($"request not found `{message.RawUrl}`");
-                    message.SendStatus(HttpStatusCode.NotFound);
-                    break;
-            }
+            message.SendStatus(HttpStatusCode.NotFound);
         }
 
         private void OnServerMonitoring(HttpContextMessage message)
