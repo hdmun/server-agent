@@ -19,7 +19,15 @@ namespace ServerAgent.Actor
 
         protected override void OnGetMessage(HttpContextMessage message)
         {
-            message.SendStatus(HttpStatusCode.NotFound);
+            switch (message.RawUrl)
+            {
+                case "/":
+                    message.SendStatus(HttpStatusCode.OK);
+                    break;
+                default:
+                    message.SendStatus(HttpStatusCode.NotFound);
+                    break;
+            }
         }
 
         protected override void OnPostMessage(HttpContextMessage message)
