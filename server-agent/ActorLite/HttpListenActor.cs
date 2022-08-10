@@ -1,34 +1,28 @@
 ﻿using ServerAgent.Actor.Message;
 using System;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace ServerAgent.ActorLite
 {
     public class HttpListenActor : ActorRefBase
     {
         private readonly HttpListener _httpListener;
-        private bool _isRunning;
-        private Task _request;
 
         public HttpListenActor(string bindUrl)
         {
             _httpListener = new HttpListener();
             _httpListener.Prefixes.Add($"{bindUrl}");
-
-            _isRunning = false;
         }
 
         protected override void OnStart()
         {
-            _isRunning = true;
-            _request = Task.Run(() => RunServer());
+            RunServer();
         }
 
         protected override void OnStop()
         {
-            _isRunning = false;
-            _request.Wait();
+            _httpListener.Close();
+            Logger?.Info("closed HttpListener");
         }
 
         protected override void OnReceive(object message)
@@ -102,47 +96,26 @@ namespace ServerAgent.ActorLite
                 Logger?.Info($"start HttpListener, Prefix Count: {_httpListener.Prefixes.Count}");
                 foreach (var prefix in _httpListener.Prefixes)
                     Logger?.Info($"listening: {prefix}");
+
+                _httpListener.BeginGetContext(GetContextCallback, _httpListener);
             }
             catch (HttpListenerException ex)
             {
                 Logger?.Error("failed to start HttpListener", ex);
                 return;
             }
-
-            IAsyncResult asyncResult = null;
-            while (_isRunning)
-            {
-                try
-                {
-                    if (!asyncResult?.IsCompleted ?? false)
-                    {
-                        Task.Delay(200).Wait();
-                        continue;
-                    }
-
-                    asyncResult = _httpListener.BeginGetContext(GetContextCallback, _httpListener);
-                }
-                catch (Exception ex)
-                {
-                    Logger?.Error("exception in `HttpServerActor.RunServer`", ex);
-                }
-            }
-
-            _httpListener.Close();
-            Logger?.Info("closed HttpListener");
         }
 
-        private void GetContextCallback(IAsyncResult ar)
+        private void GetContextCallback(IAsyncResult result)
         {
             HttpListenerContext context = null;
             try
             {
-                context = _httpListener.EndGetContext(ar);
+                if (!_httpListener.IsListening)
+                    return;
 
-                if (!_isRunning)
-                {
-                    throw new Exception("Closed HttpServerActor");
-                }
+                context = _httpListener.EndGetContext(result);
+                _httpListener.BeginGetContext(GetContextCallback, result);
 
                 var requestMessage = new HttpContextMessage()
                 {
