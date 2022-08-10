@@ -67,7 +67,7 @@ namespace ServerAgent.ActorLite
                     {
                         if (_messageQueue.IsEmpty)
                         {
-                            Task.Delay(1000).Wait();
+                            Task.Delay(100).Wait();
                             continue;
                         }
 

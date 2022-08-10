@@ -112,7 +112,7 @@ namespace ServerAgent.ActorLite
                 {
                     if (_mailboxQueue.IsEmpty)
                     {
-                        Task.Delay(100);
+                        Task.Delay(500).Wait();
                         continue;
                     }
 
