@@ -1,5 +1,4 @@
-﻿using log4net;
-using ServerAgent.Actor.Message;
+﻿using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
 using ServerAgent.Data.Entity;
 using System;
@@ -52,8 +51,8 @@ namespace ServerAgent.Actor
                 case AliveCheckMessage _:
                     OnAliveCheckMessage();
                     break;
-                case WorkerThreadMessage _message:
-                    OnWorkerThreadMessage(_message);
+                case HeartbeatMessage _message:
+                    OnHeartbeatMessage(_message);
                     break;
                 default:
                     Logger.Error($"Received message of type [{message.GetType()}] - Invalid message in DateTimeCheckActor");
@@ -69,7 +68,7 @@ namespace ServerAgent.Actor
             }
         }
 
-        private void OnWorkerThreadMessage(WorkerThreadMessage message)
+        private void OnHeartbeatMessage(HeartbeatMessage message)
         {
             _checkModel.ThreadId = message.ThreadId;
             _checkModel.ProcessingTime = message.ProcessingTime;
@@ -122,8 +121,8 @@ namespace ServerAgent.Actor
                 case AliveCheckMessage _:
                     OnAliveCheckMessage();
                     break;
-                case WorkerThreadMessage _message:
-                    OnWorkerThreadMessage(_message);
+                case HeartbeatMessage _message:
+                    OnHeartbeatMessage(_message);
                     break;
                 default:
                     Logger.Error($"Received message of type [{message.GetType()}] - Invalid message in DateTimeCheckActor");
@@ -139,7 +138,7 @@ namespace ServerAgent.Actor
             }
         }
 
-        private void OnWorkerThreadMessage(WorkerThreadMessage message)
+        private void OnHeartbeatMessage(HeartbeatMessage message)
         {
             _checkModel.ThreadId = message.ThreadId;
             _checkModel.ProcessingTime = message.ProcessingTime;

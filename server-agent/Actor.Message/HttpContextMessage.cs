@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -14,6 +15,8 @@ namespace ServerAgent.Actor.Message
         public string HttpMethod { get => Request.HttpMethod; }
         public string RawUrl { get => Request.RawUrl; }
         public string Url { get => Request.Url.ToString(); }
+
+        public string[] UrlPath { get => RawUrl.Split('/').Skip(1).ToArray(); }
 
         public void SendStatus(HttpStatusCode statusCode)
         {

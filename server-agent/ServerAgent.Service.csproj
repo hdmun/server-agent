@@ -130,7 +130,7 @@
     <Compile Include="Actor.Message\PublishMessage.cs" />
     <Compile Include="Actor.Message\ProcessMessage.cs" />
     <Compile Include="Actor.Message\MonitoringMessage.cs" />
-    <Compile Include="Actor.Message\WorkerThreadMessage.cs" />
+    <Compile Include="Actor.Message\HeartbeatMessage.cs" />
     <Compile Include="ActorLite\ActorRefBase.cs" />
     <Compile Include="ActorLite\ActorContext.cs" />
     <Compile Include="ActorLite\AskActor.cs" />

@@ -19,10 +19,13 @@ namespace ServerAgent.Actor
 
         protected override void OnGetMessage(HttpContextMessage message)
         {
-            switch (message.RawUrl)
+            switch (message.UrlPath[0])
             {
-                case "/":
+                case "":
                     message.SendStatus(HttpStatusCode.OK);
+                    break;
+                case "process":
+                    OnGetProcess(message);
                     break;
                 default:
                     message.SendStatus(HttpStatusCode.NotFound);
@@ -66,6 +69,34 @@ namespace ServerAgent.Actor
         protected override void OnDeleteMessage(HttpContextMessage message)
         {
             message.SendStatus(HttpStatusCode.NotFound);
+        }
+
+        private void OnGetProcess(HttpContextMessage message)
+        {
+            try
+            {
+                _monitoringActor
+                    .Ask<ProcessStateResponse>(new ProcessStateReqeuest()
+                    {
+                        ServerName = message.UrlPath[1]
+                    })
+                    .ContinueWith((task) =>
+                    {
+                        var result = task.Result;
+                        if (task.Exception != null)
+                        {
+                            Logger.Error($"Exception `OnGetProcess.ProcessStateReqeuest`", task.Exception);
+                            message.SendStatus(HttpStatusCode.InternalServerError);
+                            return;
+                        }
+                        message.SendJson(HttpStatusCode.OK, result);
+                    });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Exception `OnGetProcess`", ex);
+                message.SendStatus(HttpStatusCode.InternalServerError);
+            }
         }
 
         private void OnServerMonitoring(HttpContextMessage message)

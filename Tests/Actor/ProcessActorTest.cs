@@ -82,7 +82,7 @@ namespace Tests.Actor
             var processActor = actorSystem.ActorOf(
                 new ProcessActor(serverProcessEntity, config), "ProcessActorTset");
 
-            processActor.Tell(new WorkerThreadMessage());
+            processActor.Tell(new HeartbeatMessage());
         }
 
         [TestMethod]

@@ -15,6 +15,8 @@ namespace ServerAgent.Actor
         private readonly string _binaryPath;
 
         private Process _process;
+        private HeartbeatMessage _lastHeartbeatMsg;
+        private DateTime? _lastRecvHeartbeatMsg;
         private IActorRef _timeCheckActor;
 
         public ProcessActor(ServerProcess serverProcess, MonitoringConfig config)
@@ -23,6 +25,8 @@ namespace ServerAgent.Actor
             _binaryPath = serverProcess.BinaryPath;
 
             _process = null;
+            _lastHeartbeatMsg = null;
+            _lastRecvHeartbeatMsg = null;
             _timeCheckActor = TimeCheckActorFactory.Create(config);
         }
 
@@ -33,14 +37,31 @@ namespace ServerAgent.Actor
                 case AliveCheckMessage _:
                     OnAliveCheckMessage();
                     break;
-                case ProcessKillRequest _message:
-                    OnKillProcessMessage(_message);
+                case ProcessStateReqeuest _message:
+                    if (_serverName != _message.ServerName)
+                    {
+                        // invalid server name
+                        Sender.Tell(new ProcessStateResponse(), Self);
+                        break;
+                    }
+
+                    Sender.Tell(new ProcessStateResponse()
+                    {
+                        ThreadId = _lastHeartbeatMsg?.ThreadId ?? 0,
+                        ProcessingTime = _lastHeartbeatMsg?.ProcessingTime ?? 0,
+                        ReceiveTime = _lastRecvHeartbeatMsg?.ToString("yyyy-MM-dd HH:mm:ss") ?? "",
+                    }, Self);
                     break;
-                case WorkerThreadMessage _message:
+                case HeartbeatMessage _message:
+                    _lastHeartbeatMsg = _message;
+                    _lastRecvHeartbeatMsg = DateTime.Now;
                     _timeCheckActor.Tell(_message, Self);
                     break;
                 case ProcessStoppedMessage _message:
                     Context.Parent?.Tell(_message, Self);
+                    break;
+                case ProcessKillRequest _message:
+                    OnKillProcessMessage(_message);
                     break;
                 default:
                     // invalid message
@@ -167,7 +188,7 @@ namespace ServerAgent.Actor
 
             try
             {
-                var message = JsonConvert.DeserializeObject<WorkerThreadMessage>(e.Data);
+                var message = JsonConvert.DeserializeObject<HeartbeatMessage>(e.Data);
                 Self.Tell(message);
             }
             catch (JsonSerializationException)

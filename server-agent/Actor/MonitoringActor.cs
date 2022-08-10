@@ -53,6 +53,13 @@ namespace ServerAgent.Actor
                     _running = _message.On;
                     Sender.Tell(_message, Self);
                     break;
+                case ProcessStateReqeuest _message:
+                    var actor = FindTargetActor(_message.ServerName);
+                    if (actor != null)
+                        actor.Tell(_message, Sender);
+                    else
+                        Sender.Tell(new ProcessStateResponse(), Self);
+                    break;
                 case ServerKillRequest _message:
                     OnServerKillRequestMessage(_message);
                     break;
