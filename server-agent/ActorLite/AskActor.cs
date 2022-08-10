@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace ServerAgent.ActorLite
 {
@@ -19,7 +20,9 @@ namespace ServerAgent.ActorLite
                     _tcs.SetResult(t);
                     break;
                 default:
-                    Logger.Error($"Received message of type [{message.GetType()}] - Invalid message in {GetType().FullName}");
+                    var msg = $"Received message of type [{message.GetType()}] - Invalid message in {GetType().FullName}";
+                    _tcs.SetException(new Exception(msg));
+                    Logger.Error(msg);
                     break;
             }
         }
