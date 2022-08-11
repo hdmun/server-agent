@@ -3,6 +3,8 @@ using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
 using System;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ServerAgent.Actor
 {
@@ -22,18 +24,15 @@ namespace ServerAgent.Actor
             switch (message.UrlPath[0])
             {
                 case "":
-                    _monitoringActor.Ask<HostStateResponse>(new HostStateRequest())
-                        .ContinueWith((task) =>
-                        {
-                            var result = task.Result;
-                            if (task.Exception != null)
-                            {
-                                Logger.Error($"Exception `OnGetMessage.HostStateRequest`", task.Exception);
-                                message.SendStatus(HttpStatusCode.InternalServerError);
-                                return;
-                            }
-                            message.SendJson(HttpStatusCode.OK, result);
-                        });
+                    var askTask = _monitoringActor.Ask<HostStateResponse>(new HostStateRequest());
+                    var result = askTask.Result;
+                    if (askTask.Exception != null)
+                    {
+                        Logger.Error($"Exception `OnGetMessage.HostStateRequest`", askTask.Exception);
+                        message.SendStatus(HttpStatusCode.InternalServerError);
+                        return;
+                    }
+                    message.SendJson(HttpStatusCode.OK, result);
                     break;
                 case "process":
                     OnGetProcess(message);
@@ -86,22 +85,19 @@ namespace ServerAgent.Actor
         {
             try
             {
-                _monitoringActor
-                    .Ask<ProcessStateResponse>(new ProcessStateReqeuest()
-                    {
-                        ServerName = message.UrlPath[1]
-                    })
-                    .ContinueWith((task) =>
-                    {
-                        var result = task.Result;
-                        if (task.Exception != null)
-                        {
-                            Logger.Error($"Exception `OnGetProcess.ProcessStateReqeuest`", task.Exception);
-                            message.SendStatus(HttpStatusCode.InternalServerError);
-                            return;
-                        }
-                        message.SendJson(HttpStatusCode.OK, result);
-                    });
+                var askTask = _monitoringActor.Ask<ProcessStateResponse>(new ProcessStateReqeuest()
+                {
+                    ServerName = message.UrlPath[1]
+                });
+
+                var result = askTask.Result;
+                if (askTask.Exception != null)
+                {
+                    Logger.Error($"Exception `OnGetProcess.ProcessStateReqeuest`", askTask.Exception);
+                    message.SendStatus(HttpStatusCode.InternalServerError);
+                    return;
+                }
+                message.SendJson(HttpStatusCode.OK, result);
             }
             catch (Exception ex)
             {
