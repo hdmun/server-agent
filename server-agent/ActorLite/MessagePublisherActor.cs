@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using ServerAgent.Actor.Message;
 using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServerAgent.ActorLite
@@ -14,6 +15,7 @@ namespace ServerAgent.ActorLite
         private readonly ConcurrentQueue<PublishMessage> _messageQueue;
 
         private bool _isRunning;
+        private SemaphoreSlim _semaphore;
         private Task _publisherTask;
 
         public MessagePublishActor(string bindAddr)
@@ -22,6 +24,7 @@ namespace ServerAgent.ActorLite
             _messageQueue = new ConcurrentQueue<PublishMessage>();
 
             _isRunning = false;
+            _semaphore = new SemaphoreSlim(0, 1);
         }
 
         protected override void OnStart()
@@ -46,6 +49,7 @@ namespace ServerAgent.ActorLite
             {
                 case PublishMessage _message:
                     _messageQueue.Enqueue(_message);
+                    _semaphore.Release(1);
                     break;
                 default:
                     break;
@@ -65,12 +69,10 @@ namespace ServerAgent.ActorLite
                 {
                     try
                     {
+                        _semaphore.Wait();
+                        
                         if (_messageQueue.IsEmpty)
-                        {
-                            Task.Delay(100).Wait();
                             continue;
-                        }
-
 
                         if (!_messageQueue.TryDequeue(out PublishMessage message))
                             continue;

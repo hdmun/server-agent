@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServerAgent.ActorLite
@@ -12,6 +13,7 @@ namespace ServerAgent.ActorLite
         private readonly Dictionary<string, ActorTimer> _actorTimers;
 
         private bool _start;
+        private SemaphoreSlim _semaphore;
         private Task _taskMailbox;
 
         public ActorContext Context { protected get; set; }
@@ -26,6 +28,7 @@ namespace ServerAgent.ActorLite
             _actorTimers = new Dictionary<string, ActorTimer>();
 
             _start = false;
+            _semaphore = new SemaphoreSlim(0, 1);
             _taskMailbox = new Task(() => _processMailbox());
 
             Logger = LogManager.GetLogger(GetType());
@@ -66,6 +69,7 @@ namespace ServerAgent.ActorLite
                 sender = Self;
 
             _mailboxQueue.Enqueue(new Mailbox(message, sender));
+            _semaphore.Release(1);
         }
 
         public Task<T> Ask<T>(object message)
@@ -110,11 +114,10 @@ namespace ServerAgent.ActorLite
             {
                 while (_start)
                 {
+                    _semaphore.Wait();
+
                     if (_mailboxQueue.IsEmpty)
-                    {
-                        Task.Delay(500).Wait();
                         continue;
-                    }
 
                     if (!_mailboxQueue.TryDequeue(out Mailbox mailbox))
                         continue;
