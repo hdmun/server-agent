@@ -46,6 +46,9 @@ namespace ServerAgent.Actor
         {
             switch (message)
             {
+                case HostStateRequest _:
+                    Sender.Tell(new HostStateResponse() { IsMonitoring = _running }, Self);
+                    break;
                 case AliveCheckMessage _message:
                     OnAliveCheckMessage(_message);
                     break;

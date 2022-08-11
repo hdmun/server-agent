@@ -22,7 +22,18 @@ namespace ServerAgent.Actor
             switch (message.UrlPath[0])
             {
                 case "":
-                    message.SendStatus(HttpStatusCode.OK);
+                    _monitoringActor.Ask<HostStateResponse>(new HostStateRequest())
+                        .ContinueWith((task) =>
+                        {
+                            var result = task.Result;
+                            if (task.Exception != null)
+                            {
+                                Logger.Error($"Exception `OnGetMessage.HostStateRequest`", task.Exception);
+                                message.SendStatus(HttpStatusCode.InternalServerError);
+                                return;
+                            }
+                            message.SendJson(HttpStatusCode.OK, result);
+                        });
                     break;
                 case "process":
                     OnGetProcess(message);

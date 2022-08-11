@@ -2,6 +2,14 @@
 
 namespace ServerAgent.Actor.Message
 {
+    public class HostStateRequest { }
+
+    public class HostStateResponse
+    {
+        [JsonProperty("on", Required = Required.Always)]
+        public bool IsMonitoring { get; set; }
+    }
+
     public class MonitoringMessage
     {
         [JsonProperty("hostName", Required = Required.Always)]
@@ -22,6 +30,7 @@ namespace ServerAgent.Actor.Message
 
     public class ServerKillResponse
     {
+        [JsonProperty("servers", Required = Required.Always)]
         public ProcessKillResponse[] Servers { get; set; }
     }
 }
