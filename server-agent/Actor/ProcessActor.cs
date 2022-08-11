@@ -159,6 +159,7 @@ namespace ServerAgent.Actor
             }
             catch (Exception ex)
             {
+                Logger.Error($"exception kill process. {_serverName}", ex);
                 throw ex;
             }
 
@@ -167,8 +168,14 @@ namespace ServerAgent.Actor
 
         private bool CloseProcess()
         {
+            if (_process.MainWindowHandle == IntPtr.Zero)
+            {
+                KillProcess();
+                return true;
+            }
+
             bool ret = _process.CloseMainWindow();
-            if (!ret)
+            if (ret)
             {
                 _process.WaitForExit();
                 Logger.Info($"success close process. {_serverName}, ExitCode: {_process.ExitCode}");
