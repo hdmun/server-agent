@@ -28,7 +28,7 @@ namespace ServerAgent.ActorLite
             _actorTimers = new Dictionary<string, ActorTimer>();
 
             _start = false;
-            _semaphore = new SemaphoreSlim(0, 1);
+            _semaphore = new SemaphoreSlim(0);
             _taskMailbox = new Task(() => _processMailbox());
 
             Logger = LogManager.GetLogger(GetType());
