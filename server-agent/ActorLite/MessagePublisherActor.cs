@@ -29,7 +29,7 @@ namespace ServerAgent.ActorLite
 
         protected override void OnStart()
         {
-            // logger.Info("starting messaging service task");
+            Logger.Info("starting messaging service task");
 
             _isRunning = true;
             _publisherTask = Task.Run(() => PublisherTask());
@@ -40,7 +40,7 @@ namespace ServerAgent.ActorLite
             _isRunning = false;
             _publisherTask.Wait();
 
-            // logger.Info("stopping messaging service task");
+            Logger.Info("stopping messaging service task");
         }
 
         protected override void OnReceive(object message)
@@ -60,7 +60,7 @@ namespace ServerAgent.ActorLite
         {
             using (var pubSocket = new PublisherSocket())
             {
-                // logger?.Info("Publisher socket binding...");
+                Logger?.Info("Publisher socket binding...");
 
                 pubSocket.Options.SendHighWatermark = 1000;
                 pubSocket.Bind(_bindAddr);
@@ -80,15 +80,13 @@ namespace ServerAgent.ActorLite
                         pubSocket.SendMoreFrame(message.Topic)
                             .SendFrame(JsonConvert.SerializeObject(message.Data));
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        // logger?.Error("Exception - PublisherTask", ex);
+                        Logger?.Error("Exception - `MessagePublishActor`", ex);
                     }
-
-                    Task.Delay(500).Wait();
                 }
 
-                // logger?.Info("closed Publisher socket");
+                Logger?.Info("closed Publisher socket");
             }
         }
     }
