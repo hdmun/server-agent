@@ -1,5 +1,4 @@
-﻿using log4net;
-using ServerAgent.Actor.Message;
+﻿using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
 using ServerAgent.Data.Entity;
 using ServerAgent.Data.Provider;

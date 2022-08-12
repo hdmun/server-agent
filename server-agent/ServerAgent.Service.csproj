@@ -146,7 +146,6 @@
     <Compile Include="Data\Entity\MonitoringConfig.cs" />
     <Compile Include="Data\Entity\ServerProcess.cs" />
     <Compile Include="Data\Provider\SqlProvider.cs" />
-    <Compile Include="IServiceTask.cs" />
     <Compile Include="Data\Provider\IDataProvider.cs" />
     <Compile Include="Data\Provider\JsonProvider.cs" />
     <Compile Include="Program.cs" />
