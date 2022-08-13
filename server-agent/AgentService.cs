@@ -2,48 +2,53 @@
 using ServerAgent.Actor;
 using ServerAgent.ActorLite;
 using ServerAgent.Data.Provider;
-using System.Configuration;
 using Topshelf;
 
 namespace ServerAgent
 {
     public class AgentService : ServiceControl
     {
-        private readonly ILog logger;
-        private readonly IDataProvider _dataProvider;
+        private readonly ILog _logger;
+        private readonly ConfigLoader _configLoader;
+        private IDataProvider _dataProvider;
 
-        private readonly ActorSystem _actorSystem;
-        private readonly IActorRef _messagePublishActor;
-        private readonly IActorRef _monitoringActor;
+        private ActorSystem _actorSystem;
 
         public AgentService()
         {
-            logger = LogManager.GetLogger(typeof(AgentService));
-
-            var providerName = ConfigurationManager.AppSettings["DataProvider"];
-            _dataProvider = DataProviderFactory.Create(providerName);
-
-            _actorSystem = ActorSystem.Create("AgentService");
-
-            var publisherAddr = ConfigurationManager.AppSettings["PublisherAddr"];
-            _messagePublishActor = _actorSystem.ActorOf(new MessagePublishActor(publisherAddr), "MessagePublishActor");
-
-            _monitoringActor = _actorSystem.ActorOf(new MonitoringActor(_dataProvider), "MonitoringActor");
-
-            var bindUrl = ConfigurationManager.AppSettings["HttpUrl"];
-            _actorSystem.ActorOf(new HttpServerActor(bindUrl, _monitoringActor), "HttpServerActor");
+            _logger = LogManager.GetLogger(typeof(AgentService));
+            _configLoader = new ConfigLoader();
         }
 
         bool ServiceControl.Start(HostControl hostControl)
         {
-            logger.Info("start agent service");
+            _logger.Info("agent service starting...");
+
+            if (!_configLoader.Load())
+            {
+                _logger.Error("failed to load config");
+                return false;
+            }
+
+            _logger.Info("success to config load");
+
+            _dataProvider = DataProviderFactory.Create(_configLoader.DataProvider);
+
+            _actorSystem = ActorSystem.Create("AgentService");
+
+            IActorRef monitoringActor = _actorSystem.ActorOf(
+                new MonitoringActor(_dataProvider), "MonitoringActor");
+            _actorSystem.ActorOf(new HttpServerActor(_configLoader.HttpBindUrl, monitoringActor), "HttpServerActor");
+
+            _actorSystem.ActorOf(new MessagePublishActor(_configLoader.PublisherAddr), "MessagePublishActor");
+            _logger.Info("success to start agent service");
             return true;
         }
 
         bool ServiceControl.Stop(HostControl hostControl)
         {
             _actorSystem.Dispose();
-            logger.Info("stop agent service");
+            _logger.Info("stop agent service");
             return true;
         }
     }

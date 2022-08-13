@@ -143,6 +143,7 @@
     <Compile Include="Actor\ProcessActor.cs" />
     <Compile Include="Actor\TimeCheckActor.cs" />
     <Compile Include="AgentService.cs" />
+    <Compile Include="ConfigLoader.cs" />
     <Compile Include="Data\Entity\MonitoringConfig.cs" />
     <Compile Include="Data\Entity\ServerProcess.cs" />
     <Compile Include="Data\Provider\SqlProvider.cs" />
