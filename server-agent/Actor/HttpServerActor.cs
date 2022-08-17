@@ -18,7 +18,7 @@ namespace ServerAgent.Actor
             _monitoringActor = monitoringActor;
         }
 
-        [HttpGet("/")]
+        [HttpGet("/host")]
         public void GetHostState(HttpContextMessage message)
         {
             var askTask = _monitoringActor.Ask<HostStateResponse>(new HostStateRequest());
