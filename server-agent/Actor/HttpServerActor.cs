@@ -1,5 +1,7 @@
 ﻿using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
+using ServerAgent.ActorLite.Http;
+using ServerAgent.ActorLite.Http.Route;
 using System;
 using System.Net;
 
@@ -16,94 +18,22 @@ namespace ServerAgent.Actor
             _monitoringActor = monitoringActor;
         }
 
-        protected override void OnGetMessage(HttpContextMessage message)
+        [HttpGet("/")]
+        public void GetHostState(HttpContextMessage message)
         {
-            switch (message.UrlPath[0])
+            var askTask = _monitoringActor.Ask<HostStateResponse>(new HostStateRequest());
+            var result = askTask.Result;
+            if (askTask.Exception != null)
             {
-                case "":
-                    var askTask = _monitoringActor.Ask<HostStateResponse>(new HostStateRequest());
-                    var result = askTask.Result;
-                    if (askTask.Exception != null)
-                    {
-                        Logger.Error($"Exception `OnGetMessage.HostStateRequest`", askTask.Exception);
-                        message.SendStatus(HttpStatusCode.InternalServerError);
-                        return;
-                    }
-                    message.SendJson(HttpStatusCode.OK, result);
-                    break;
-                case "process":
-                    OnGetProcess(message);
-                    break;
-                default:
-                    message.SendStatus(HttpStatusCode.NotFound);
-                    break;
-            }
-        }
-
-        protected override void OnPostMessage(HttpContextMessage message)
-        {
-            message.SendStatus(HttpStatusCode.NotFound);
-        }
-
-        protected override void OnPatchMessage(HttpContextMessage message)
-        {
-            switch (message.RawUrl)
-            {
-                case "/monitoring":
-                    OnServerMonitoring(message);
-                    break;
-                default:
-                    Logger.Error($"request not found `{message.RawUrl}`");
-                    message.SendStatus(HttpStatusCode.NotFound);
-                    break;
-            }
-        }
-
-        protected override void OnPutMessage(HttpContextMessage message)
-        {
-            switch (message.RawUrl)
-            {
-                case "/process/kill":
-                    OnServerProcessKill(message);
-                    break;
-                default:
-                    Logger.Error($"request not found `{message.RawUrl}`");
-                    message.SendStatus(HttpStatusCode.NotFound);
-                    break;
-            }
-        }
-
-        protected override void OnDeleteMessage(HttpContextMessage message)
-        {
-            message.SendStatus(HttpStatusCode.NotFound);
-        }
-
-        private void OnGetProcess(HttpContextMessage message)
-        {
-            try
-            {
-                var askTask = _monitoringActor.Ask<ProcessStateResponse>(new ProcessStateReqeuest()
-                {
-                    ServerName = message.UrlPath[1]
-                });
-
-                var result = askTask.Result;
-                if (askTask.Exception != null)
-                {
-                    Logger.Error($"Exception `OnGetProcess.ProcessStateReqeuest`", askTask.Exception);
-                    message.SendStatus(HttpStatusCode.InternalServerError);
-                    return;
-                }
-                message.SendJson(HttpStatusCode.OK, result);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Exception `OnGetProcess`", ex);
+                Logger.Error($"Exception `GetHostState`", askTask.Exception);
                 message.SendStatus(HttpStatusCode.InternalServerError);
+                return;
             }
+            message.SendJson(HttpStatusCode.OK, result);
         }
 
-        private void OnServerMonitoring(HttpContextMessage message)
+        [HttpPatch("/monitoring")]
+        public void UpdateMonitoring(HttpContextMessage message)
         {
             try
             {
@@ -145,35 +75,54 @@ namespace ServerAgent.Actor
             }
         }
 
-        private void OnServerProcessKill(HttpContextMessage message)
+        [HttpGet("/process/{serverName:string}")]
+        public void GetProcessState(HttpContextMessage message, string serverName)
         {
             try
             {
-                var model = message.GetRequestBody<ServerKillRequest>();
-                if (model == null)
+                var askTask = _monitoringActor.Ask<ProcessStateResponse>(new ProcessStateReqeuest()
                 {
-                    Logger.Error($"bad request body `{message.Url}`");
-                    message.SendStatus(HttpStatusCode.BadRequest);
+                    ServerName = serverName
+                });
+
+                var result = askTask.Result;
+                if (askTask.Exception != null)
+                {
+                    Logger.Error($"Exception `GetProcessState` ProcessStateReqeuest", askTask.Exception);
+                    message.SendStatus(HttpStatusCode.InternalServerError);
                     return;
                 }
+                message.SendJson(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Exception `GetProcessState`", ex);
+                message.SendStatus(HttpStatusCode.InternalServerError);
+            }
+        }
 
-                Logger.Info($"http request `{message.Url}`, {model.ServerName}, {model.KillCommand}");
+        [HttpDelete("/process/{serverName:string}/{killCommand:string}")]
+        public void DeleteProcess(HttpContextMessage message, string serverName, string killCommand)
+        {
+            try
+            {
+                Logger.Info($"http request `{message.Url}`, {serverName}, {killCommand}");
 
                 var askTask = _monitoringActor.Ask<ServerKillResponse>(new ServerKillRequest()
                 {
-                    KillCommand = model.KillCommand,
-                    ServerName = model.ServerName,
+                    ServerName = serverName,
+                    KillCommand = killCommand,
                 });
 
                 var response = askTask.Result;
 
-                Logger.Info($"http response `{message.Url}`, closed server count: {response.Servers.Length}");
+                Logger.Info($"http response `{message.Url}`, closed server count: {response.Servers?.Length}");
 
-                message.SendJson(HttpStatusCode.Created, response);
+                message.SendJson(HttpStatusCode.OK, response);
             }
             catch (Exception ex)
             {
-                Logger.Error($"Exception `OnServerProcessKill`", ex);
+                Logger.Error($"Exception `DeleteProcess`", ex);
                 message.SendStatus(HttpStatusCode.InternalServerError);
             }
         }

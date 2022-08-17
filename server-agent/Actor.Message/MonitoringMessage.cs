@@ -30,7 +30,7 @@ namespace ServerAgent.Actor.Message
 
     public class ServerKillResponse
     {
-        [JsonProperty("servers", Required = Required.Always)]
+        [JsonProperty("servers", Required = Required.AllowNull)]
         public ProcessKillResponse[] Servers { get; set; }
     }
 }

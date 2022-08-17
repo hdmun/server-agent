@@ -9,14 +9,21 @@ namespace ServerAgent.Actor.Message
 {
     public class HttpContextMessage
     {
-        public HttpListenerRequest Request { get; set; }
-        public HttpListenerResponse Response { get; set; }
+        public HttpListenerRequest Request { get => _context.Request; }
+        public HttpListenerResponse Response { get => _context.Response; }
 
         public string HttpMethod { get => Request.HttpMethod; }
         public string RawUrl { get => Request.RawUrl; }
         public string Url { get => Request.Url.ToString(); }
 
         public string[] UrlPath { get => RawUrl.Split('/').Skip(1).ToArray(); }
+
+        private HttpListenerContext _context;
+
+        public HttpContextMessage(HttpListenerContext context)
+        {
+            _context = context;
+        }
 
         public void SendStatus(HttpStatusCode statusCode)
         {

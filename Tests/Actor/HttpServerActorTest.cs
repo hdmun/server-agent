@@ -46,33 +46,85 @@ namespace Tests.Actor
         }
 
         [TestMethod]
-        public void HttpServerActor_Test()
+        public void UpdateMonitoring_Test()
         {
-            ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
-            var monitoringActor = actorSystem.ActorOf(new MonitoringActorMock(), "MonitoringActorMock");
-            actorSystem.ActorOf(new HttpServerActorMock(monitoringActor), "HttpServerActorMock");
-
-            using (HttpClient client = new HttpClient())
+            using (var actorSys = ActorSystem.Create("TestActorSystem"))
             {
-                client.BaseAddress = new Uri(_bindUrl);
-                client.DefaultRequestHeaders.Accept
-                      .Add(new MediaTypeWithQualityHeaderValue("application/json"));  // ACCEPT 헤더
+                var monitoringActor = actorSys.ActorOf(new MonitoringActorMock(), "MonitoringActorMock");
+                actorSys.ActorOf(new HttpServerActorMock(monitoringActor), "HttpServerActorMock");
 
-                var requestData = JsonConvert.SerializeObject(new MonitoringMessage()
+                var json = JsonConvert.SerializeObject(new MonitoringMessage()
                 {
                     HostName = Dns.GetHostName(),
                     On = true
                 });
-                var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), "/server/monitoring")
+
+                var obj = RequestConent<MonitoringMessage>("PATCH", "/monitoring", json, HttpStatusCode.Created);
+                Assert.IsTrue(obj.On);
+            }
+        }
+
+        [TestMethod]
+        public void GetProcessState_Test()
+        {
+            using (var actorSys = ActorSystem.Create("TestActorSystem"))
+            {
+                var monitoringActor = actorSys.ActorOf(new MonitoringActorMock(), "MonitoringActorMock");
+                actorSys.ActorOf(new HttpServerActorMock(monitoringActor), "HttpServerActorMock");
+
+                var obj = RequestNoContent<ProcessStateResponse>("GET", "/process/TestServer1", HttpStatusCode.OK);
+                Assert.AreEqual(obj.ThreadId, 0u);
+                Assert.AreEqual(obj.ReceiveTime, "");
+                Assert.AreEqual(obj.ProcessingTime, 0u);
+            }
+        }
+
+        [TestMethod]
+        public void DeleteProcess_Test()
+        {
+            using (var actorSys = ActorSystem.Create("TestActorSystem"))
+            {
+                var monitoringActor = actorSys.ActorOf(new MonitoringActorMock(), "MonitoringActorMock");
+                actorSys.ActorOf(new HttpServerActorMock(monitoringActor), "HttpServerActorMock");
+
+                var obj = RequestNoContent<ServerKillResponse>("DELETE", "/process/TestServer1/close", HttpStatusCode.OK);
+                Assert.IsNull(obj.Servers);
+            }
+        }
+
+        private T RequestConent<T>(string method, string requestUrl, string json, HttpStatusCode statusCode)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(_bindUrl);
+                client.DefaultRequestHeaders
+                    .Accept
+                    .Add(new MediaTypeWithQualityHeaderValue("application/json"));  // ACCEPT 헤더
+
+                var requestMessage = new HttpRequestMessage(new HttpMethod(method), requestUrl)
                 {
-                    Content = new StringContent(requestData, Encoding.UTF8, "application/json")
+                    Content = new StringContent(json, Encoding.UTF8, "application/json")
                 };
                 var response = client.SendAsync(requestMessage).Result;
-                Assert.AreEqual(response.StatusCode, HttpStatusCode.Created);
+                Assert.AreEqual(response.StatusCode, statusCode);
 
                 var responseData = response.Content.ReadAsStringAsync().Result;
-                var responseObj = JsonConvert.DeserializeObject<MonitoringMessage>(responseData);
-                Assert.IsTrue(responseObj.On);
+                return JsonConvert.DeserializeObject<T>(responseData);
+            }
+        }
+
+        private T RequestNoContent<T>(string method, string requestUrl, HttpStatusCode statusCode)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(_bindUrl);
+
+                var requestMessage = new HttpRequestMessage(new HttpMethod(method), requestUrl);
+                var response = client.SendAsync(requestMessage).Result;
+                Assert.AreEqual(response.StatusCode, statusCode);
+
+                var responseData = response.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<T>(responseData);
             }
         }
     }

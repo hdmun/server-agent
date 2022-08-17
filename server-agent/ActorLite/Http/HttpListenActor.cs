@@ -1,21 +1,26 @@
 ﻿using ServerAgent.Actor.Message;
+using ServerAgent.ActorLite.Http.Route;
 using System;
 using System.Net;
 
-namespace ServerAgent.ActorLite
+namespace ServerAgent.ActorLite.Http
 {
     public class HttpListenActor : ActorRefBase
     {
         private readonly HttpListener _httpListener;
+        private readonly HttpRouter _router;
 
         public HttpListenActor(string bindUrl)
         {
             _httpListener = new HttpListener();
             _httpListener.Prefixes.Add($"{bindUrl}");
+
+            _router = new HttpRouter();
         }
 
         protected override void OnStart()
         {
+            _router.Register(this);
             RunServer();
         }
 
@@ -33,59 +38,20 @@ namespace ServerAgent.ActorLite
                     OnHttpContextMessage(_message);
                     break;
                 default:
-                    break;
+                    // invalid message
+                    string exceptMessage = $"Received message of type [{message.GetType()}] - Invalid message in HttpListenActor";
+                    Logger.Error(exceptMessage);
+                    throw new Exception(exceptMessage);  // todo. 커스텀 Exception 클래스 만들어서 처리
             }
         }
 
         private void OnHttpContextMessage(HttpContextMessage message)
         {
-            switch (message.HttpMethod)
+            if (!_router.Route(message))
             {
-                case "GET":
-                    OnGetMessage(message);
-                    break;
-                case "POST":
-                    OnPostMessage(message);
-                    break;
-                case "PATCH":
-                    OnPatchMessage(message);
-                    break;
-                case "PUT":
-                    OnPutMessage(message);
-                    break;
-                case "DELETE":
-                    OnDeleteMessage(message);
-                    break;
-                default:
-                    Logger.Error($"request not found `{message.HttpMethod}:{message.RawUrl}`");
-                    message.SendStatus(HttpStatusCode.NotFound);
-                    break;
+                message.SendStatus(HttpStatusCode.NotFound);
+                Logger.Error($"request not found `{message.HttpMethod}:{message.RawUrl}`");
             }
-        }
-
-        protected virtual void OnGetMessage(HttpContextMessage message)
-        {
-            throw new NotImplementedException("Not Implemention `OnGetMessage`");
-        }
-
-        protected virtual void OnPostMessage(HttpContextMessage message)
-        {
-            throw new NotImplementedException("Not Implemention `OnPostMessage`");
-        }
-
-        protected virtual void OnPatchMessage(HttpContextMessage message)
-        {
-            throw new NotImplementedException("Not Implemention `OnPatchMessage`");
-        }
-
-        protected virtual void OnPutMessage(HttpContextMessage message)
-        {
-            throw new NotImplementedException("Not Implemention `OnPutMessage`");
-        }
-
-        protected virtual void OnDeleteMessage(HttpContextMessage message)
-        {
-            throw new NotImplementedException("Not Implemention `OnDeleteMessage`");
         }
 
         private void RunServer()
@@ -117,12 +83,7 @@ namespace ServerAgent.ActorLite
                 context = _httpListener.EndGetContext(result);
                 _httpListener.BeginGetContext(GetContextCallback, result);
 
-                var requestMessage = new HttpContextMessage()
-                {
-                    Request = context.Request,
-                    Response = context.Response
-                };
-                Self.Tell(requestMessage);
+                Self.Tell(new HttpContextMessage(context));
             }
             catch (Exception ex)
             {

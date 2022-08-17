@@ -125,8 +125,11 @@
   <ItemGroup>
     <Compile Include="Actor.Message\AliveCheckMessage.cs" />
     <Compile Include="Actor.Message\HttpContextMessage.cs" />
+    <Compile Include="ActorLite\Http\Route\HttpRoute.cs" />
+    <Compile Include="ActorLite\Http\Route\HttpRouteAttribute.cs" />
+    <Compile Include="ActorLite\Http\Route\HttpRouter.cs" />
     <Compile Include="ActorLite\MessagePublisherActor.cs" />
-    <Compile Include="ActorLite\HttpListenActor.cs" />
+    <Compile Include="ActorLite\Http\HttpListenActor.cs" />
     <Compile Include="Actor.Message\PublishMessage.cs" />
     <Compile Include="Actor.Message\ProcessMessage.cs" />
     <Compile Include="Actor.Message\MonitoringMessage.cs" />

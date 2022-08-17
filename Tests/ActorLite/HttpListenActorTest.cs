@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServerAgent.Actor.Message;
 using ServerAgent.ActorLite;
+using ServerAgent.ActorLite.Http;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -20,34 +21,13 @@ namespace Tests.ActorLite
                 : base(_bindUrl)
             {
             }
-
-            protected override void OnGetMessage(HttpContextMessage message)
-            {
-                message.SendStatus(HttpStatusCode.NotFound);
-            }
-
-            protected override void OnPostMessage(HttpContextMessage message)
-            {
-                message.SendStatus(HttpStatusCode.NotFound);
-            }
-
-            protected override void OnPatchMessage(HttpContextMessage message)
-            {
-                message.SendStatus(HttpStatusCode.NotFound);
-            }
-
-            protected override void OnDeleteMessage(HttpContextMessage message)
-            {
-                message.SendStatus(HttpStatusCode.NotFound);
-            }
         }
-
-        private ActorSystem _actorSystem = ActorSystem.Create("TestActorSystem");
 
         [TestMethod]
         public void HttpReceive_Test()
         {
-            _actorSystem.ActorOf(new HttpListenActorMock(), "HttpListenActorMock");
+            ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
+            actorSystem.ActorOf(new HttpListenActorMock(), "HttpListenActorMock");
 
             using (HttpClient client = new HttpClient())
             {
@@ -56,7 +36,7 @@ namespace Tests.ActorLite
                       .Add(new MediaTypeWithQualityHeaderValue("application/json"));  // ACCEPT 헤더
 
                 var emptyJsonText = new StringContent("{}", Encoding.UTF8, "application/json");
-                var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), "/server/monitoring")
+                var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), "/monitoring")
                 {
                     Content = emptyJsonText
                 };
@@ -66,6 +46,8 @@ namespace Tests.ActorLite
                 var responseData = response.Content.ReadAsStringAsync().Result;
                 Assert.AreEqual(responseData, "");
             }
+
+            actorSystem.Dispose();
         }
     }
 }
