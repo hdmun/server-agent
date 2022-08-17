@@ -3,19 +3,13 @@ using ServerAgent.Actor;
 using ServerAgent.ActorLite;
 using ServerAgent.Data.Entity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests.Actor
 {
     [TestClass]
     internal class TimeCheckActorTest
     {
-        private ActorSystem _actorSystem = ActorSystem.Create("TestActorSystem");
-
         [TestMethod]
         public void TimeCheckActor_Factory_Test()
         {

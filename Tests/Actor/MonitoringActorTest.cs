@@ -30,9 +30,7 @@ namespace Tests.Actor
             {
             }
 
-            public TaskCompletionSource<bool> Tcs { private get; set; }
-
-            public bool WaitResult() => Tcs.Task.Result;
+            public TaskCompletionSource<bool> Tcs { get; set; }
 
             protected override void OnStart()
             {
@@ -45,9 +43,9 @@ namespace Tests.Actor
                     base.OnReceive(message);
                     Tcs.SetResult(true);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Tcs.SetResult(false);
+                    Tcs.SetException(ex);
                 }
             }
         }
@@ -55,19 +53,22 @@ namespace Tests.Actor
         [TestMethod]
         public void TestMonitoringActor_Tell()
         {
-            ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
-            var actorMock = new MonitoringActorMock();
-            var monitoringActor = actorSystem.ActorOf(actorMock, "MonitoringActorMock");
+            using (var actorSys = ActorSystem.Create("TestActorSystem"))
+            {
+                var actorMock = new MonitoringActorMock();
+                var monitoringActor = actorSys.ActorOf(actorMock, "MonitoringActorMock");
 
-            actorMock.Tcs = new TaskCompletionSource<bool>();
-            monitoringActor.Tell(new AliveCheckMessage(), null);
-            Assert.IsTrue(actorMock.WaitResult());
+                actorMock.Tcs = new TaskCompletionSource<bool>();
+                monitoringActor.Tell(new AliveCheckMessage(), null);
+                Assert.IsTrue(actorMock.Tcs.Task.Result);
 
-            actorMock.Tcs = new TaskCompletionSource<bool>();
-            monitoringActor.Tell(new object(), null);
-            Assert.IsFalse(actorMock.WaitResult());
-
-            monitoringActor.Stop();
+                actorMock.Tcs = new TaskCompletionSource<bool>();
+                monitoringActor.Tell(new object(), null);
+                Assert.ThrowsException<AggregateException>(() =>
+                {
+                    actorMock.Tcs.Task.Wait();
+                });
+            }
         }
     }
 }

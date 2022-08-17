@@ -53,6 +53,7 @@ namespace ServerAgent.ActorLite
             OnStop();
 
             _start = false;
+            _semaphore.Release(1);
 
             if (!_taskMailbox.IsCompleted)
                 _taskMailbox.Wait();
