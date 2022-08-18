@@ -92,6 +92,7 @@
     <Compile Include="Actor\MonitoringActorTest.cs" />
     <Compile Include="Actor\ProcessActorTest.cs" />
     <Compile Include="Actor\TimeCheckActorTest.cs" />
+    <Compile Include="HttpRequestMock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

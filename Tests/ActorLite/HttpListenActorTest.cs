@@ -13,15 +13,15 @@ namespace Tests.ActorLite
     [TestClass]
     public class HttpListenActorTest
     {
-        private static readonly string _bindUrl = "http://localhost:8080/";
-
         internal class HttpListenActorMock : HttpListenActor
         {
             public HttpListenActorMock()
-                : base(_bindUrl)
+                : base(HttpRequestMock.BindUrl)
             {
             }
         }
+
+        internal class EmptyObject { }
 
         [TestMethod]
         public void HttpReceive_Test()
@@ -29,23 +29,7 @@ namespace Tests.ActorLite
             ActorSystem actorSystem = ActorSystem.Create("TestActorSystem");
             actorSystem.ActorOf(new HttpListenActorMock(), "HttpListenActorMock");
 
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(_bindUrl);
-                client.DefaultRequestHeaders.Accept
-                      .Add(new MediaTypeWithQualityHeaderValue("application/json"));  // ACCEPT 헤더
-
-                var emptyJsonText = new StringContent("{}", Encoding.UTF8, "application/json");
-                var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), "/monitoring")
-                {
-                    Content = emptyJsonText
-                };
-                var response = client.SendAsync(requestMessage).Result;
-                Assert.AreEqual(response.StatusCode, HttpStatusCode.NotFound);
-
-                var responseData = response.Content.ReadAsStringAsync().Result;
-                Assert.AreEqual(responseData, "");
-            }
+            HttpRequestMock.RequestConent<EmptyObject>("PATCH", "/monitoring", "{}", HttpStatusCode.NotFound);
 
             actorSystem.Dispose();
         }

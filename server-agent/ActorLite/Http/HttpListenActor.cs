@@ -14,6 +14,7 @@ namespace ServerAgent.ActorLite.Http
         {
             _httpListener = new HttpListener();
             _httpListener.Prefixes.Add($"{bindUrl}");
+            _httpListener.AuthenticationSchemes = AuthenticationSchemes.IntegratedWindowsAuthentication;
 
             _router = new HttpRouter();
         }
