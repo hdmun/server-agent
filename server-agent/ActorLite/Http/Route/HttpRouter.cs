@@ -1,17 +1,19 @@
-﻿using ServerAgent.Actor.Message;
+﻿using log4net;
+using ServerAgent.Actor.Message;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace ServerAgent.ActorLite.Http.Route
 {
     public class HttpRouter
     {
         private readonly List<HttpRoute> _routes = new List<HttpRoute>();
+        private readonly ILog _logger;
 
         public HttpRouter()
         {
+            _logger = LogManager.GetLogger(type: GetType());
         }
 
         public void Register(object controller)
@@ -44,9 +46,16 @@ namespace ServerAgent.ActorLite.Http.Route
                 var matches = route.ParseEndpoint(url);
                 if (matches == null)
                     continue;
-
-                if (!route.Invoke(new object[] { message }.Concat(matches.Values.ToArray()).ToArray()))
+                try
+                {
+                    if (!route.Invoke(new object[] { message }.Concat(matches.Values.ToArray()).ToArray()))
+                        continue;
+                }
+                catch (TargetInvocationException ex)
+                {
+                    _logger.Error("exception", ex);
                     continue;
+                }
 
                 return true;
             }

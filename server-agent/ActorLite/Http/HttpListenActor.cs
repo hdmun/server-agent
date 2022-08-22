@@ -51,7 +51,7 @@ namespace ServerAgent.ActorLite.Http
             if (!_router.Route(message))
             {
                 message.SendStatus(HttpStatusCode.NotFound);
-                Logger.Error($"request not found `{message.HttpMethod}:{message.RawUrl}`");
+                Logger.Error($"request not found `{message.HttpMethod}` `{message.RawUrl}`");
             }
         }
 
