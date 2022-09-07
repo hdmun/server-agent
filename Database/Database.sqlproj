@@ -64,6 +64,7 @@
   <ItemGroup>
     <Build Include="Tables\HostServer.sql" />
     <Build Include="Tables\MonitoringConfig.sql" />
+    <Build Include="Tables\ServerAgentLog.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ServerProcess.sql" />
